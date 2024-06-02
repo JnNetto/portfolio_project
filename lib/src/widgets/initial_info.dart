@@ -5,13 +5,14 @@ import 'package:lottie/lottie.dart';
 import 'package:portfolio/src/utils/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-Widget initialInfo(BoxConstraints constraints) {
+Widget initialInfo(BoxConstraints constraints,
+    {required Map<String, dynamic> data}) {
   return Padding(
     padding: const EdgeInsets.only(left: 10),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        info(),
+        info(data: data),
         SizedBox(
           width: constraints.maxWidth * 0.05,
         ),
@@ -30,21 +31,21 @@ Widget animationLothie() {
 }
 
 // ignore: non_constant_identifier_names
-Widget info() {
+Widget info({required Map<String, dynamic> data}) {
   final Uri linkedInUrl = Uri.parse('https://www.linkedin.com/');
   final Uri githubUrl = Uri.parse('https://github.com/');
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        "João Antônio Gomes",
+        data["name"] ?? "No title",
         style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(fontSize: 50, color: ColorsApp.letters)),
       ),
       AnimatedTextKit(
         animatedTexts: [
           TypewriterAnimatedText(
-            'Desenvolvedor Mobile',
+            data["occupation"] ?? "No description",
             textStyle: TextStyle(fontSize: 30, color: ColorsApp.letters),
             speed: const Duration(milliseconds: 200),
           ),
