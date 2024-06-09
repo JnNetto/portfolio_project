@@ -7,7 +7,7 @@ PreferredSizeWidget appBarCustom(BoxConstraints constraints) {
   return AppBar(
     toolbarHeight: constraints.maxHeight * .1,
     backgroundColor: ColorsApp.appbar,
-    shadowColor: ColorsApp.color1,
+    shadowColor: ColorsApp.shadowColor,
     elevation: 40,
     title: Padding(
       padding: EdgeInsets.only(left: constraints.maxWidth * 0.05),
