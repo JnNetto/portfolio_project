@@ -134,45 +134,42 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
 
 Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return Expanded(
-    flex: 1,
-    child: Column(
-      children: [
-        TextButton(
-          onPressed: () async {
-            await launchUrl(Uri.parse(project["repositoryLink"]));
-          },
-          child: Text(
-            'Ver repositório',
-            style: GoogleFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-                color: ColorsApp.letterButton),
-          ),
+  return Column(
+    children: [
+      TextButton(
+        onPressed: () async {
+          await launchUrl(Uri.parse(project["repositoryLink"]));
+        },
+        child: Text(
+          'Ver repositório',
+          style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+              color: ColorsApp.letterButton),
         ),
-        const SizedBox(height: 10),
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            'Ver aplicação no ar',
-            style: GoogleFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-                color: ColorsApp.letterButton),
-          ),
+      ),
+      const SizedBox(height: 10),
+      TextButton(
+        onPressed: () {},
+        child: Text(
+          'Ver aplicação no ar',
+          style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+              color: ColorsApp.letterButton),
         ),
-        const SizedBox(height: 10),
-        TextButton(
-          onPressed: () {
-            // details(context, constraints, project: project);
-          },
-          child: Text(
-            'Ver detalhes',
-            style: GoogleFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-                color: ColorsApp.letterButton),
-          ),
+      ),
+      const SizedBox(height: 10),
+      TextButton(
+        onPressed: () {
+          details(context, constraints, project: project);
+        },
+        child: Text(
+          'Ver detalhes',
+          style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+              color: ColorsApp.letterButton),
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 
@@ -182,7 +179,7 @@ void details(BuildContext context, BoxConstraints constraints,
     context: context,
     builder: (BuildContext context) {
       List<String> funcionalidades =
-          List<String>.from(project["functionalidades"]);
+          List<String>.from(project["functionalities"]);
       List<String> images = List<String>.from(project["images"]);
       return AlertDialog(
         backgroundColor: ColorsApp.card,
@@ -192,42 +189,33 @@ void details(BuildContext context, BoxConstraints constraints,
                   fontSize: constraints.maxWidth > 1050 ? 22 : 18,
                   color: ColorsApp.letters)),
         ),
-        scrollable: true, // Ensure the dialog is scrollable
-        content: SizedBox(
-          width: constraints.maxWidth * 0.8,
+        content: SingleChildScrollView(
           child: Column(
             children: [
-              Flexible(
-                // Use Flexible to allow the ListView to expand
-                child: ListView.builder(
-                  itemCount: funcionalidades.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: Icon(Icons.check, color: ColorsApp.letters),
-                      title: Text(
-                        funcionalidades[index],
-                        style: GoogleFonts.aBeeZee(
-                            fontSize: 16, color: ColorsApp.letters),
-                      ),
-                    );
-                  },
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: funcionalidades.map((funcionalidade) {
+                  return ListTile(
+                    leading: Icon(Icons.check, color: ColorsApp.letters),
+                    title: Text(
+                      funcionalidade,
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: 16, color: ColorsApp.letters),
+                    ),
+                  );
+                }).toList(),
               ),
-              SizedBox(height: 20),
-              Flexible(
-                // Use Flexible here as well
-                child: ListView.builder(
-                  itemCount: images.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Image.memory(
-                        base64Decode(images[index]),
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: images.map((images) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Image.memory(
+                      base64Decode(images),
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ),
@@ -239,26 +227,23 @@ void details(BuildContext context, BoxConstraints constraints,
 
 Widget texts(BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return Expanded(
-    flex: 1,
-    child: Column(
-      children: [
-        Text(
-          project["name"],
-          style: GoogleFonts.aBeeZee(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
-        ),
-        Text(
-          project["description"],
-          textAlign: TextAlign.center,
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 15,
-              fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
-        ),
-      ],
-    ),
+  return Column(
+    children: [
+      Text(
+        project["name"],
+        style: GoogleFonts.aBeeZee(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: ColorsApp.letters),
+      ),
+      Text(
+        project["description"],
+        textAlign: TextAlign.center,
+        style: GoogleFonts.aBeeZee(
+            fontSize: constraints.maxWidth > 1050 ? 20 : 15,
+            fontWeight: FontWeight.bold,
+            color: ColorsApp.letters),
+      ),
+    ],
   );
 }
