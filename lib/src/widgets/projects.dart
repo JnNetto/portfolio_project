@@ -1,17 +1,13 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:js';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/colors.dart';
 
-Widget atributes(BoxConstraints constraints,
+Widget projects(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
   final CarouselController controller = CarouselController();
   List<Object?> projects = data["projects"];
@@ -44,7 +40,7 @@ Widget sliderProjects(
                   height: 400,
                   enlargeCenterPage: true,
                   autoPlay: true,
-                  aspectRatio: 27 / 9,
+                  aspectRatio: 16 / 9,
                   autoPlayCurve: Curves.easeInExpo,
                   enableInfiniteScroll: true,
                   autoPlayAnimationDuration: const Duration(milliseconds: 800),
@@ -132,44 +128,83 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
   );
 }
 
+Widget texts(BoxConstraints constraints,
+    {required Map<String, dynamic> project}) {
+  return Expanded(
+    flex: 1,
+    child: Column(
+      children: [
+        Text(
+          project["name"],
+          style: GoogleFonts.aBeeZee(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: ColorsApp.letters),
+        ),
+        Text(
+          project["description"],
+          textAlign: TextAlign.center,
+          style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 20 : 15,
+              fontWeight: FontWeight.bold,
+              color: ColorsApp.letters),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return Column(
-    children: [
-      TextButton(
-        onPressed: () async {
-          await launchUrl(Uri.parse(project["repositoryLink"]));
-        },
-        child: Text(
-          'Ver repositório',
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-              color: ColorsApp.letterButton),
+  return Expanded(
+    flex: 1,
+    child: Column(
+      children: [
+        repositoryLink(constraints, project: project),
+        const SizedBox(height: 10),
+        deployedApplication(constraints, project: project),
+        const SizedBox(height: 10),
+        TextButton(
+          onPressed: () {
+            details(context, constraints, project: project);
+          },
+          child: Text(
+            'Ver detalhes',
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                color: ColorsApp.letterButton),
+          ),
         ),
-      ),
-      const SizedBox(height: 10),
-      TextButton(
-        onPressed: () {},
-        child: Text(
-          'Ver aplicação no ar',
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-              color: ColorsApp.letterButton),
-        ),
-      ),
-      const SizedBox(height: 10),
-      TextButton(
-        onPressed: () {
-          details(context, constraints, project: project);
-        },
-        child: Text(
-          'Ver detalhes',
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-              color: ColorsApp.letterButton),
-        ),
-      ),
-    ],
+      ],
+    ),
+  );
+}
+
+Widget repositoryLink(BoxConstraints constraints,
+    {required Map<String, dynamic> project}) {
+  return TextButton(
+    onPressed: () async {
+      await launchUrl(Uri.parse(project["repositoryLink"]));
+    },
+    child: Text(
+      'Ver repositório',
+      style: GoogleFonts.aBeeZee(
+          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+          color: ColorsApp.letterButton),
+    ),
+  );
+}
+
+Widget deployedApplication(BoxConstraints constraints,
+    {required Map<String, dynamic> project}) {
+  return TextButton(
+    onPressed: () {},
+    child: Text(
+      'Ver aplicação no ar',
+      style: GoogleFonts.aBeeZee(
+          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+          color: ColorsApp.letterButton),
+    ),
   );
 }
 
@@ -180,7 +215,7 @@ void details(BuildContext context, BoxConstraints constraints,
     builder: (BuildContext context) {
       List<String> funcionalidades =
           List<String>.from(project["functionalities"]);
-      List<String> images = List<String>.from(project["images"]);
+      List<String> imagens = List<String>.from(project["images"]);
       return AlertDialog(
         backgroundColor: ColorsApp.card,
         title: Center(
@@ -192,31 +227,8 @@ void details(BuildContext context, BoxConstraints constraints,
         content: SingleChildScrollView(
           child: Column(
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: funcionalidades.map((funcionalidade) {
-                  return ListTile(
-                    leading: Icon(Icons.check, color: ColorsApp.letters),
-                    title: Text(
-                      funcionalidade,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: 16, color: ColorsApp.letters),
-                    ),
-                  );
-                }).toList(),
-              ),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: images.map((images) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Image.memory(
-                      base64Decode(images),
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }).toList(),
-              ),
+              functionalities(funcionalidades),
+              images(imagens, context)
             ],
           ),
         ),
@@ -225,25 +237,55 @@ void details(BuildContext context, BoxConstraints constraints,
   );
 }
 
-Widget texts(BoxConstraints constraints,
-    {required Map<String, dynamic> project}) {
+Widget functionalities(List<String> funcionalidades) {
   return Column(
-    children: [
-      Text(
-        project["name"],
-        style: GoogleFonts.aBeeZee(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: ColorsApp.letters),
-      ),
-      Text(
-        project["description"],
-        textAlign: TextAlign.center,
-        style: GoogleFonts.aBeeZee(
-            fontSize: constraints.maxWidth > 1050 ? 20 : 15,
-            fontWeight: FontWeight.bold,
-            color: ColorsApp.letters),
-      ),
-    ],
+    mainAxisSize: MainAxisSize.min,
+    children: funcionalidades.map((funcionalidade) {
+      return ListTile(
+        leading: Icon(Icons.check, color: ColorsApp.letters),
+        title: Text(
+          funcionalidade,
+          style: GoogleFonts.aBeeZee(fontSize: 16, color: ColorsApp.letters),
+        ),
+      );
+    }).toList(),
+  );
+}
+
+Widget images(List<String> imagens, BuildContext context) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: imagens.map((image) {
+      return GestureDetector(
+        onTap: () {
+          zoom(context, image);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Image.memory(
+            base64Decode(image),
+            width: 350,
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }).toList(),
+  );
+}
+
+zoom(BuildContext context, String image) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          child: Image.memory(
+            base64Decode(image),
+            fit: BoxFit.contain,
+          ),
+        ),
+      );
+    },
   );
 }

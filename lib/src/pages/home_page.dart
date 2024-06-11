@@ -6,7 +6,7 @@ import 'package:portfolio/src/widgets/initial_info.dart';
 import 'package:portfolio/src/controllers/home_controller.dart';
 
 import '../widgets/about_me.dart';
-import '../widgets/atributes.dart';
+import '../widgets/projects.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -65,7 +65,7 @@ Widget connection(
                   SizedBox(
                     height: constraints.maxWidth > 1050 ? 40 : 0,
                   ),
-                  atributes(constraints, data: snapshot.data!),
+                  projects(constraints, data: snapshot.data!),
                 ],
               ),
             ),
