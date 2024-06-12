@@ -4,8 +4,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 import '../utils/colors.dart';
+import '../utils/grid_menus.dart';
 
 Widget projects(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
@@ -171,7 +173,7 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
           child: Text(
             'Ver detalhes',
             style: GoogleFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                fontSize: constraints.maxWidth > 1050 ? 20 : 16,
                 color: ColorsApp.letterButton),
           ),
         ),
@@ -189,7 +191,7 @@ Widget repositoryLink(BoxConstraints constraints,
     child: Text(
       'Ver repositório',
       style: GoogleFonts.aBeeZee(
-          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
           color: ColorsApp.letterButton),
     ),
   );
@@ -202,7 +204,7 @@ Widget deployedApplication(BoxConstraints constraints,
     child: Text(
       'Ver aplicação no ar',
       style: GoogleFonts.aBeeZee(
-          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
           color: ColorsApp.letterButton),
     ),
   );
@@ -253,9 +255,28 @@ Widget functionalities(List<String> funcionalidades) {
 }
 
 Widget images(List<String> imagens, BuildContext context) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: imagens.map((image) {
+  int halfLength = imagens.length <= 3 ? 3 : (imagens.length / 2).ceil();
+  return GridMenus(
+    contentLine1: imagens.take(halfLength).map((image) {
+      // var decodedImage = decodeImageFromBase64(image);
+      // double width = decodedImage.width > decodedImage.height ? 350 : 150;
+      return GestureDetector(
+        onTap: () {
+          zoom(context, image);
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Image.memory(
+            base64Decode(image),
+            width: 350,
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }).toList(),
+    contentLine2: imagens.skip(halfLength).map((image) {
+      // var decodedImage = decodeImageFromBase64(image);
+      // double width = decodedImage.width > decodedImage.height ? 300 : 150;
       return GestureDetector(
         onTap: () {
           zoom(context, image);
@@ -279,13 +300,17 @@ zoom(BuildContext context, String image) {
     builder: (BuildContext context) {
       return Dialog(
         backgroundColor: Colors.transparent,
-        child: Container(
-          child: Image.memory(
-            base64Decode(image),
-            fit: BoxFit.contain,
-          ),
+        child: Image.memory(
+          base64Decode(image),
+          fit: BoxFit.contain,
         ),
       );
     },
   );
+}
+
+img.Image decodeImageFromBase64(String base64String) {
+  Uint8List bytes = base64Decode(base64String);
+  img.Image image = img.decodeImage(bytes)!;
+  return image;
 }
