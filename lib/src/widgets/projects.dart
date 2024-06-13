@@ -1,10 +1,11 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import '../utils/colors.dart';
 import '../utils/grid_menus.dart';
@@ -41,7 +42,7 @@ Widget sliderProjects(
                 options: CarouselOptions(
                   height: 400,
                   enlargeCenterPage: true,
-                  autoPlay: true,
+                  autoPlay: false,
                   aspectRatio: 16 / 9,
                   autoPlayCurve: Curves.easeInExpo,
                   enableInfiniteScroll: true,
@@ -163,9 +164,9 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
     child: Column(
       children: [
         repositoryLink(constraints, project: project),
-        const SizedBox(height: 10),
+        const SizedBox(height: 7.5),
         deployedApplication(constraints, project: project),
-        const SizedBox(height: 10),
+        const SizedBox(height: 7.5),
         TextButton(
           onPressed: () {
             details(context, constraints, project: project);
@@ -218,22 +219,56 @@ void details(BuildContext context, BoxConstraints constraints,
       List<String> funcionalidades =
           List<String>.from(project["functionalities"]);
       List<String> imagens = List<String>.from(project["images"]);
-      return AlertDialog(
-        backgroundColor: ColorsApp.card,
-        title: Center(
-          child: Text("Detalhes",
-              style: GoogleFonts.aBeeZee(
-                  fontSize: constraints.maxWidth > 1050 ? 22 : 18,
-                  color: ColorsApp.letters)),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              functionalities(funcionalidades),
-              images(imagens, context)
-            ],
+      String plataforma = project["platform"];
+      String minhaFuncao = project["myFunction"];
+      return Stack(
+        children: [
+          arrowBackButton(context),
+          AlertDialog(
+            backgroundColor: ColorsApp.card,
+            title: Center(
+              child: Text("Detalhes",
+                  style: GoogleFonts.aBeeZee(
+                      fontSize: constraints.maxWidth > 1050 ? 28 : 22,
+                      color: ColorsApp.letters)),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Text("Tipo de plataforma: $plataforma",
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          color: ColorsApp.letters)),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text("Função desempenhada: $minhaFuncao",
+                      textAlign: TextAlign.left,
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          color: ColorsApp.letters)),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text("Funcionalidades do projeto",
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          color: ColorsApp.letters)),
+                  functionalities(funcionalidades),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text("Imagens do projeto",
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          color: ColorsApp.letters)),
+                  images(imagens, plataforma, context, constraints),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       );
     },
   );
@@ -254,39 +289,43 @@ Widget functionalities(List<String> funcionalidades) {
   );
 }
 
-Widget images(List<String> imagens, BuildContext context) {
+Widget images(List<String> imagens, String plataforma, BuildContext context,
+    BoxConstraints constraints) {
   int halfLength = imagens.length <= 3 ? 3 : (imagens.length / 2).ceil();
   return GridMenus(
     contentLine1: imagens.take(halfLength).map((image) {
-      // var decodedImage = decodeImageFromBase64(image);
-      // double width = decodedImage.width > decodedImage.height ? 350 : 150;
       return GestureDetector(
         onTap: () {
           zoom(context, image);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Image.memory(
             base64Decode(image),
-            width: 350,
+            width: plataforma == "Mobile"
+                ? constraints.maxWidth > 1050
+                    ? 150
+                    : 70
+                : 350,
             fit: BoxFit.cover,
           ),
         ),
       );
     }).toList(),
     contentLine2: imagens.skip(halfLength).map((image) {
-      // var decodedImage = decodeImageFromBase64(image);
-      // double width = decodedImage.width > decodedImage.height ? 300 : 150;
       return GestureDetector(
         onTap: () {
           zoom(context, image);
         },
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Image.memory(
             base64Decode(image),
-            width: 350,
-            fit: BoxFit.cover,
+            width: plataforma == "Mobile"
+                ? constraints.maxWidth > 1050
+                    ? 150
+                    : 70
+                : 350,
           ),
         ),
       );
@@ -294,23 +333,43 @@ Widget images(List<String> imagens, BuildContext context) {
   );
 }
 
-zoom(BuildContext context, String image) {
+zoom(
+  BuildContext context,
+  String image,
+) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         backgroundColor: Colors.transparent,
-        child: Image.memory(
-          base64Decode(image),
-          fit: BoxFit.contain,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.memory(
+                base64Decode(image),
+                fit: BoxFit.contain,
+              ),
+            ),
+            arrowBackButton(context)
+          ],
         ),
       );
     },
   );
 }
 
-img.Image decodeImageFromBase64(String base64String) {
-  Uint8List bytes = base64Decode(base64String);
-  img.Image image = img.decodeImage(bytes)!;
-  return image;
+Widget arrowBackButton(BuildContext context) {
+  return Positioned(
+    top: 16,
+    left: 16,
+    child: IconButton(
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      icon: const Icon(
+        EvaIcons.arrowBackOutline,
+        color: Colors.white,
+      ),
+    ),
+  );
 }
