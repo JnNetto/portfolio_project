@@ -6,7 +6,7 @@ import '../utils/colors.dart';
 Widget aboutMe(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 40),
+    padding: const EdgeInsets.symmetric(horizontal: 80),
     child: Column(
       children: [
         Text("Sobre mim",

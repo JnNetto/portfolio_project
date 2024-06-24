@@ -5,8 +5,6 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/foundation.dart';
-import 'package:image/image.dart' as img;
 import '../utils/colors.dart';
 import '../utils/grid_menus.dart';
 
@@ -110,9 +108,12 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
             Center(
               child: Column(
                 children: [
-                  texts(constraints, project: project),
-                  const SizedBox(height: 10),
-                  buttonsToSee(context, constraints, project: project)
+                  Expanded(
+                      flex: 1, child: texts(constraints, project: project)),
+                  Expanded(
+                      flex: 1,
+                      child:
+                          buttonsToSee(context, constraints, project: project))
                 ],
               ),
             ),
@@ -133,53 +134,47 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
 
 Widget texts(BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return Expanded(
-    flex: 1,
-    child: Column(
-      children: [
-        Text(
-          project["name"],
-          style: GoogleFonts.aBeeZee(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
-        ),
-        Text(
-          project["description"],
-          textAlign: TextAlign.center,
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 15,
-              fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
-        ),
-      ],
-    ),
+  return Column(
+    children: [
+      Text(
+        project["name"],
+        style: GoogleFonts.aBeeZee(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: ColorsApp.letters),
+      ),
+      Text(
+        project["description"],
+        textAlign: TextAlign.center,
+        style: GoogleFonts.aBeeZee(
+            fontSize: constraints.maxWidth > 1050 ? 20 : 15,
+            fontWeight: FontWeight.bold,
+            color: ColorsApp.letters),
+      ),
+    ],
   );
 }
 
 Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return Expanded(
-    flex: 1,
-    child: Column(
-      children: [
-        repositoryLink(constraints, project: project),
-        const SizedBox(height: 7.5),
-        deployedApplication(constraints, project: project),
-        const SizedBox(height: 7.5),
-        TextButton(
-          onPressed: () {
-            details(context, constraints, project: project);
-          },
-          child: Text(
-            'Ver detalhes',
-            style: GoogleFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 1050 ? 20 : 16,
-                color: ColorsApp.letterButton),
-          ),
+  return Column(
+    children: [
+      repositoryLink(constraints, project: project),
+      const SizedBox(height: 7.5),
+      deployedApplication(constraints, project: project),
+      const SizedBox(height: 7.5),
+      TextButton(
+        onPressed: () {
+          details(context, constraints, project: project);
+        },
+        child: Text(
+          'Ver detalhes',
+          style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+              color: ColorsApp.letterButton),
         ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 
@@ -229,7 +224,7 @@ void details(BuildContext context, BoxConstraints constraints,
             title: Center(
               child: Text("Detalhes",
                   style: GoogleFonts.aBeeZee(
-                      fontSize: constraints.maxWidth > 1050 ? 28 : 22,
+                      fontSize: constraints.maxWidth > 1050 ? 32 : 26,
                       color: ColorsApp.letters)),
             ),
             content: SingleChildScrollView(
@@ -238,22 +233,22 @@ void details(BuildContext context, BoxConstraints constraints,
                   Text("Tipo de plataforma: $plataforma",
                       textAlign: TextAlign.left,
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
                           color: ColorsApp.letters)),
                   const SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   Text("Função desempenhada: $minhaFuncao",
                       textAlign: TextAlign.left,
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
                           color: ColorsApp.letters)),
                   const SizedBox(
                     height: 20,
                   ),
                   Text("Funcionalidades do projeto",
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          fontSize: constraints.maxWidth > 1050 ? 24 : 23,
                           color: ColorsApp.letters)),
                   functionalities(funcionalidades),
                   const SizedBox(
@@ -261,7 +256,7 @@ void details(BuildContext context, BoxConstraints constraints,
                   ),
                   Text("Imagens do projeto",
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 22 : 18,
+                          fontSize: constraints.maxWidth > 1050 ? 24 : 23,
                           color: ColorsApp.letters)),
                   images(imagens, plataforma, context, constraints),
                 ],
@@ -333,7 +328,7 @@ Widget images(List<String> imagens, String plataforma, BuildContext context,
   );
 }
 
-zoom(
+dynamic zoom(
   BuildContext context,
   String image,
 ) {

@@ -56,8 +56,11 @@ Widget socialNetwork({required Map<String, dynamic> data}) {
     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     children: item.map((item) {
       return IconButton(
-        icon: Icon(item["icon"]),
-        hoverColor: Colors.white,
+        icon: Icon(
+          item["icon"],
+          color: Colors.white,
+        ),
+        hoverColor: Colors.grey,
         onPressed: () async {
           await launchUrl(Uri.parse(item["url"]));
         },
