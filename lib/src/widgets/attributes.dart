@@ -7,18 +7,22 @@ import '../utils/colors.dart';
 
 Widget attributes(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
-  return Column(
-    children: [
-      Padding(
-        padding: EdgeInsets.only(bottom: constraints.maxWidth > 1050 ? 60 : 40),
-        child: Text("|| Habilidades ||",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    fontSize: constraints.maxWidth > 1050 ? 50 : 40,
-                    color: ColorsApp.letters))),
-      ),
-      attributesList(constraints, project: data)
-    ],
+  return Padding(
+    padding: const EdgeInsets.only(top: 40),
+    child: Column(
+      children: [
+        Padding(
+          padding:
+              EdgeInsets.only(bottom: constraints.maxWidth > 1050 ? 60 : 40),
+          child: Text("|| Habilidades ||",
+              style: GoogleFonts.aBeeZee(
+                  textStyle: TextStyle(
+                      fontSize: constraints.maxWidth > 1050 ? 50 : 40,
+                      color: ColorsApp.letters))),
+        ),
+        attributesList(constraints, project: data)
+      ],
+    ),
   );
 }
 
@@ -28,11 +32,12 @@ Widget attributesList(BoxConstraints constraints,
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: habilidades.map((habilidade) {
-      return Card(
-        color: ColorsApp.card,
-        margin: const EdgeInsets.all(10.0),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50),
+      return Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: constraints.maxWidth > 1050 ? 200 : 50),
+        child: Card(
+          color: ColorsApp.card,
+          margin: const EdgeInsets.all(10.0),
           child: Row(
             children: [
               Image.memory(
@@ -47,12 +52,12 @@ Widget attributesList(BoxConstraints constraints,
                   children: [
                     Text(habilidade['title']!,
                         style: TextStyle(
-                            fontSize: constraints.maxWidth > 1050 ? 20 : 18,
+                            fontSize: constraints.maxWidth > 1050 ? 22 : 20,
                             color: ColorsApp.letters)),
                     const SizedBox(height: 5),
                     Text(habilidade['description']!,
                         style: TextStyle(
-                            fontSize: constraints.maxWidth > 1050 ? 20 : 18,
+                            fontSize: constraints.maxWidth > 1050 ? 16 : 14,
                             color: ColorsApp.letters)),
                   ],
                 ),

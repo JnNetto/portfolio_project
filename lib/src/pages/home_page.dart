@@ -54,13 +54,14 @@ Widget connection(
                       TextStyle(fontSize: 50, color: ColorsApp.letters)));
         } else if (snapshot.hasData) {
           return Padding(
-            padding: EdgeInsets.only(top: constraints.maxWidth > 1050 ? 40 : 0),
+            padding:
+                EdgeInsets.only(top: constraints.maxWidth > 1050 ? 40 : 30),
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   initialInfo(constraints, data: snapshot.data!),
                   SizedBox(
-                    height: constraints.maxWidth > 1050 ? 40 : 0,
+                    height: constraints.maxWidth > 1050 ? 40 : 90,
                   ),
                   aboutMe(constraints, data: snapshot.data!),
                   SizedBox(

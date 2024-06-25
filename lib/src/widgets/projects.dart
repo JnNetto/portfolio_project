@@ -33,7 +33,7 @@ Widget sliderProjects(
     children: [
       Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: constraints.maxWidth > 1050 ? 200 : 0),
+            horizontal: constraints.maxWidth > 1050 ? 250 : 0),
         child: projects.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : CarouselSlider.builder(
@@ -45,7 +45,7 @@ Widget sliderProjects(
                   autoPlayCurve: Curves.easeInExpo,
                   enableInfiniteScroll: true,
                   autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                  viewportFraction: constraints.maxWidth > 1050 ? 0.5 : 0.7,
+                  viewportFraction: constraints.maxWidth > 1050 ? 0.4 : 0.7,
                 ),
                 carouselController: controller,
                 itemCount: projects.length,

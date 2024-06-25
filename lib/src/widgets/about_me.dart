@@ -6,8 +6,10 @@ import '../utils/colors.dart';
 Widget aboutMe(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 80),
+    padding: EdgeInsets.symmetric(
+        horizontal: constraints.maxWidth > 1050 ? 200 : 50),
     child: Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text("Sobre mim",
             style: GoogleFonts.aBeeZee(
@@ -55,7 +57,7 @@ Widget textAboutMe(BoxConstraints constraints,
       data["about"] ?? "No description",
       style: GoogleFonts.aBeeZee(
           textStyle: TextStyle(
-              fontSize: constraints.maxWidth > 1050 ? 25 : 20,
+              fontSize: constraints.maxWidth > 1050 ? 20 : 20,
               color: ColorsApp.letters)),
       softWrap: true,
     ),
