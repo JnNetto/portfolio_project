@@ -7,6 +7,7 @@ import 'package:portfolio/src/controllers/home_controller.dart';
 
 import '../widgets/about_me.dart';
 import '../widgets/attributes.dart';
+import '../widgets/contact.dart';
 import '../widgets/projects.dart';
 
 class Home extends StatefulWidget {
@@ -75,6 +76,7 @@ Widget connection(
                   SizedBox(
                     height: constraints.maxWidth > 1050 ? 40 : 100,
                   ),
+                  contact(constraints, context, data: snapshot.data!)
                 ],
               ),
             ),
