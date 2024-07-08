@@ -11,7 +11,7 @@ Widget aboutMe(BoxConstraints constraints,
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text("Sobre mim",
+        Text("|| Sobre mim ||",
             style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(
                     fontSize: constraints.maxWidth > 1050 ? 50 : 40,

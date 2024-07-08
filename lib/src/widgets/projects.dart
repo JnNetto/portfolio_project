@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/grid_menus.dart';
@@ -161,7 +162,7 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
     children: [
       repositoryLink(constraints, project: project),
       const SizedBox(height: 7.5),
-      deployedApplication(constraints, project: project),
+      deployedApplication(constraints, context, project: project),
       const SizedBox(height: 7.5),
       TextButton(
         onPressed: () {
@@ -193,10 +194,46 @@ Widget repositoryLink(BoxConstraints constraints,
   );
 }
 
-Widget deployedApplication(BoxConstraints constraints,
+Widget deployedApplication(BoxConstraints constraints, BuildContext context,
     {required Map<String, dynamic> project}) {
   return TextButton(
-    onPressed: () {},
+    onPressed: () async {
+      if (project["link"] == "") {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: ColorsApp.background,
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: animationLothie(constraints),
+                    ),
+                    SizedBox(
+                      height: constraints.maxWidth > 1050 ? 20 : 10,
+                    ),
+                    Text(
+                      "Parece que ainda não está publicado.",
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+                          color: ColorsApp.letters),
+                    ),
+                    Text(
+                      "Tente novamente em breve!",
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+                          color: ColorsApp.letters),
+                    )
+                  ],
+                ),
+              );
+            });
+      } else {
+        await launchUrl(Uri.parse(project["link"]));
+      }
+    },
     child: Text(
       'Ver aplicação no ar',
       style: GoogleFonts.aBeeZee(
@@ -266,6 +303,20 @@ void details(BuildContext context, BoxConstraints constraints,
         ],
       );
     },
+  );
+}
+
+Widget animationLothie(BoxConstraints constraints) {
+  return Container(
+    margin: const EdgeInsets.only(top: 1, bottom: 10),
+    child: Lottie.asset("assets/animations/construction.json",
+        width: constraints.maxWidth > 1050
+            ? constraints.maxWidth * .3
+            : constraints.maxWidth,
+        height: constraints.maxHeight > 1000
+            ? constraints.maxHeight * .5
+            : constraints.maxHeight * .3,
+        fit: BoxFit.fill),
   );
 }
 

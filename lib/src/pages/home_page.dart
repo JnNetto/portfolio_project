@@ -71,7 +71,10 @@ Widget connection(
                   SizedBox(
                     height: constraints.maxWidth > 1050 ? 40 : 100,
                   ),
-                  attributes(constraints, data: snapshot.data!),
+                  Attributes(constraints: constraints, data: snapshot.data!),
+                  SizedBox(
+                    height: constraints.maxWidth > 1050 ? 40 : 100,
+                  ),
                 ],
               ),
             ),
