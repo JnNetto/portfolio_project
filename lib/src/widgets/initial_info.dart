@@ -1,6 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:portfolio/src/utils/colors.dart';
@@ -9,15 +11,15 @@ import 'package:url_launcher/url_launcher.dart';
 Widget initialInfo(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
   return Padding(
-    padding: const EdgeInsets.only(left: 10),
+    padding: const EdgeInsets.symmetric(horizontal: 200),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        info(constraints, data: data),
+        Flexible(child: info(constraints, data: data)),
         SizedBox(
           width: constraints.maxWidth * 0.05,
         ),
-        animationLothie(constraints)
+        Flexible(child: animationLothie(constraints))
       ],
     ),
   );
@@ -53,7 +55,7 @@ Widget socialNetwork({required Map<String, dynamic> data}) {
   var item = listSocialNetworks(links, icons, itens);
 
   return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    mainAxisAlignment: MainAxisAlignment.start,
     children: item.map((item) {
       return IconButton(
         icon: Icon(

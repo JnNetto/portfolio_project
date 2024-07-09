@@ -110,11 +110,14 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
               child: Column(
                 children: [
                   Expanded(
-                      flex: 1, child: texts(constraints, project: project)),
+                      flex: 1,
+                      child: SingleChildScrollView(
+                          child: texts(constraints, project: project))),
                   Expanded(
                       flex: 1,
-                      child:
-                          buttonsToSee(context, constraints, project: project))
+                      child: SingleChildScrollView(
+                          child: buttonsToSee(context, constraints,
+                              project: project)))
                 ],
               ),
             ),
@@ -217,13 +220,13 @@ Widget deployedApplication(BoxConstraints constraints, BuildContext context,
                     Text(
                       "Parece que ainda não está publicado.",
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 13,
                           color: ColorsApp.letters),
                     ),
                     Text(
                       "Tente novamente em breve!",
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+                          fontSize: constraints.maxWidth > 1050 ? 20 : 13,
                           color: ColorsApp.letters),
                     )
                   ],
