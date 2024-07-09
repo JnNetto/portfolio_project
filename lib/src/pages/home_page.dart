@@ -70,13 +70,16 @@ Widget connection(
                   ),
                   projects(constraints, data: snapshot.data!),
                   SizedBox(
-                    height: constraints.maxWidth > 1050 ? 40 : 100,
+                    height: constraints.maxWidth > 1050 ? 100 : 100,
                   ),
                   Attributes(constraints: constraints, data: snapshot.data!),
                   SizedBox(
-                    height: constraints.maxWidth > 1050 ? 40 : 100,
+                    height: constraints.maxWidth > 1050 ? 150 : 100,
                   ),
-                  contact(constraints, context, data: snapshot.data!)
+                  contact(constraints, context, data: snapshot.data!),
+                  SizedBox(
+                    height: constraints.maxWidth > 1050 ? 150 : 100,
+                  ),
                 ],
               ),
             ),

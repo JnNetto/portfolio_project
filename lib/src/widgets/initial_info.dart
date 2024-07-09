@@ -1,8 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:portfolio/src/utils/colors.dart';
@@ -11,15 +9,25 @@ import 'package:url_launcher/url_launcher.dart';
 Widget initialInfo(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 200),
+    padding:
+        EdgeInsets.symmetric(horizontal: constraints.maxWidth > 1050 ? 200 : 0),
     child: Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(child: info(constraints, data: data)),
+        Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: constraints.maxWidth > 1050
+                  ? 0
+                  : constraints.maxHeight * .35),
+          child: info(constraints, data: data),
+        ),
         SizedBox(
           width: constraints.maxWidth * 0.05,
         ),
-        Flexible(child: animationLothie(constraints))
+        Visibility(
+            visible: constraints.maxWidth > 1050,
+            child: animationLothie(constraints))
       ],
     ),
   );
@@ -30,7 +38,7 @@ Widget animationLothie(BoxConstraints constraints) {
     margin: const EdgeInsets.only(top: 1, bottom: 10),
     child: Lottie.asset("assets/animations/cellphone.json",
         width: constraints.maxWidth > 1050 ? constraints.maxWidth * .35 : 0,
-        height: constraints.maxHeight > 650 ? constraints.maxHeight * .75 : 0,
+        height: constraints.maxWidth > 1050 ? constraints.maxHeight * .75 : 0,
         fit: BoxFit.fill),
   );
 }

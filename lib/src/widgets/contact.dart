@@ -1,9 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server/gmail.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/colors.dart';
@@ -22,15 +18,17 @@ Widget contact(BoxConstraints constraints, BuildContext context,
                   textStyle: TextStyle(
                       fontSize: constraints.maxWidth > 1050 ? 50 : 40,
                       color: ColorsApp.letters))),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              EmailForm(
-                constraints: constraints,
+              Expanded(
+                child: EmailForm(
+                  constraints: constraints,
+                ),
               ),
-              SizedBox(width: 30),
-              email(constraints)
+              const SizedBox(width: 30),
+              Expanded(child: email(constraints))
             ],
           )
         ],
@@ -48,11 +46,11 @@ Widget contact(BoxConstraints constraints, BuildContext context,
                   textStyle: TextStyle(
                       fontSize: constraints.maxWidth > 1050 ? 50 : 40,
                       color: ColorsApp.letters))),
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           EmailForm(
             constraints: constraints,
           ),
-          SizedBox(height: 25),
+          const SizedBox(height: 35),
           email(constraints)
         ],
       ),
@@ -62,6 +60,8 @@ Widget contact(BoxConstraints constraints, BuildContext context,
 
 Widget email(BoxConstraints constraints) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       Text(
         "Email para contato:",
@@ -77,13 +77,6 @@ Widget email(BoxConstraints constraints) {
                 fontSize: constraints.maxWidth > 1050 ? 18 : 14,
                 color: ColorsApp.letters)),
       ),
-      Text(
-        "Adicione nas redes",
-        style: GoogleFonts.aBeeZee(
-            textStyle: TextStyle(
-                fontSize: constraints.maxWidth > 1050 ? 18 : 14,
-                color: ColorsApp.letters)),
-      )
     ],
   );
 }
@@ -105,52 +98,82 @@ class _EmailFormState extends State<EmailForm> {
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
-  InputDecoration _inputDecoration(String label) {
+  bool _senderEmailHasError = false;
+  bool _subjectHasError = false;
+  bool _emailTextHasError = false;
+  bool _nameHasError = false;
+
+  InputDecoration _inputDecoration(String label, bool hasError) {
     return InputDecoration(
       hintStyle: TextStyle(color: ColorsApp.letters),
-      labelText: label,
+      labelText: hasError ? null : label,
       labelStyle: TextStyle(
-          color: ColorsApp.letters,
-          fontSize: widget.constraints.maxWidth > 1050 ? 16 : 11),
+        color: ColorsApp.letters,
+        fontSize: widget.constraints.maxWidth > 1050 ? 16 : 11,
+      ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
       ),
+      errorStyle: TextStyle(
+        fontSize: widget.constraints.maxWidth > 1050 ? 12 : 10,
+        color: Colors.red,
+      ),
+      hintMaxLines: 1,
+      alignLabelWithHint: true,
     );
   }
 
-  Future<void> _sendMessage() async {
-    if (_formKey.currentState!.validate()) {
-      final String subject = _subjectController.text;
-      final String emailText = _emailTextController.text;
-      final String name = _nameController.text;
+  void _validateForm() {
+    final formState = _formKey.currentState;
+    if (formState != null) {
+      setState(() {
+        _senderEmailHasError = !_validateEmail(_senderEmailController.text);
+        _subjectHasError = _subjectController.text.isEmpty;
+        _emailTextHasError = _emailTextController.text.isEmpty;
+        _nameHasError = _nameController.text.isEmpty;
+      });
 
-      final String mailtoUrl =
-          'mailto:jagomes694@gmail.com?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent('$emailText\n\nFrom: $name')}';
-
-      // ignore: deprecated_member_use
-      if (await canLaunch(mailtoUrl)) {
-        await launchUrl(Uri.parse(mailtoUrl));
-      } else {
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Erro ao enviar email"),
-            content: const Text("Não foi possível abrir o cliente de email."),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
+      if (formState.validate()) {
+        _sendMessage();
       }
+    }
+  }
+
+  bool _validateEmail(String email) {
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email);
+  }
+
+  Future<void> _sendMessage() async {
+    final String subject = _subjectController.text;
+    final String emailText = _emailTextController.text;
+    final String name = _nameController.text;
+
+    final String mailtoUrl =
+        'mailto:jagomes694@gmail.com?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent('$emailText\n\nFrom: $name')}';
+
+    // ignore: deprecated_member_use
+    if (await canLaunch(mailtoUrl)) {
+      await launchUrl(Uri.parse(mailtoUrl));
+    } else {
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Erro ao enviar email"),
+          content: const Text("Não foi possível abrir o cliente de email."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -161,31 +184,57 @@ class _EmailFormState extends State<EmailForm> {
       child: Column(
         children: [
           SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 35 : 25,
+            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
             width: widget.constraints.maxWidth > 1050 ? 600 : 300,
             child: TextFormField(
-              style: TextStyle(color: ColorsApp.letters),
+              style: TextStyle(
+                color: ColorsApp.letters,
+                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+              ),
+              controller: _nameController,
+              decoration: _inputDecoration("Nome", _nameHasError),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, insira o seu nome';
+                }
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
+            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
+            child: TextFormField(
+              style: TextStyle(
+                color: ColorsApp.letters,
+                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+              ),
               controller: _senderEmailController,
-              decoration: _inputDecoration("Email do remetente"),
+              decoration:
+                  _inputDecoration("Email do remetente", _senderEmailHasError),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Por favor, insira o email do remetente';
                 }
-                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                if (!_validateEmail(value)) {
                   return 'Por favor, insira um email válido';
                 }
                 return null;
               },
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 10),
           SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 35 : 25,
+            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
             width: widget.constraints.maxWidth > 1050 ? 600 : 300,
             child: TextFormField(
-              style: TextStyle(color: ColorsApp.letters),
+              style: TextStyle(
+                color: ColorsApp.letters,
+                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+              ),
               controller: _subjectController,
-              decoration: _inputDecoration("Assunto"),
+              decoration: _inputDecoration("Assunto", _subjectHasError),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Por favor, insira o assunto';
@@ -194,13 +243,17 @@ class _EmailFormState extends State<EmailForm> {
               },
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 10),
           SizedBox(
             width: widget.constraints.maxWidth > 1050 ? 600 : 300,
             child: TextFormField(
-              style: TextStyle(color: ColorsApp.letters),
+              style: TextStyle(
+                color: ColorsApp.letters,
+                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+              ),
               controller: _emailTextController,
-              decoration: _inputDecoration("Texto do email"),
+              decoration:
+                  _inputDecoration("Texto do email", _emailTextHasError),
               maxLines: 6,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -210,28 +263,13 @@ class _EmailFormState extends State<EmailForm> {
               },
             ),
           ),
-          SizedBox(height: 16),
-          SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 35 : 25,
-            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
-            child: TextFormField(
-              style: TextStyle(color: ColorsApp.letters),
-              controller: _nameController,
-              decoration: _inputDecoration("Nome"),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira o seu nome';
-                }
-                return null;
-              },
-            ),
-          ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           ElevatedButton(
             style: ButtonStyle(
               fixedSize: MaterialStateProperty.all<Size>(Size(
-                  widget.constraints.maxWidth > 1050 ? 600 : 300,
-                  widget.constraints.maxWidth > 1050 ? 35 : 18)),
+                widget.constraints.maxWidth > 1050 ? 600 : 300,
+                widget.constraints.maxWidth > 1050 ? 35 : 18,
+              )),
               backgroundColor:
                   MaterialStateProperty.all<Color>(Colors.transparent),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -242,7 +280,7 @@ class _EmailFormState extends State<EmailForm> {
               ),
               elevation: MaterialStateProperty.all<double>(0),
             ),
-            onPressed: _sendMessage,
+            onPressed: _validateForm,
             child: Text(
               'Enviar mensagem',
               style: TextStyle(color: ColorsApp.letters),
@@ -253,22 +291,3 @@ class _EmailFormState extends State<EmailForm> {
     );
   }
 }
-
-        //     if (value == null || value.isEmpty) {
-        //       return 'Por favor, insira o assunto';
-        //     }
-
-        //     if (value == null || value.isEmpty) {
-        //       return 'Por favor, insira o seu nome';
-        //     }
-
-        //     if (value == null || value.isEmpty) {
-        //       return 'Por favor, insira o texto do email';
-        //     }
-
-              // if (value == null || value.isEmpty) {
-              //   return 'Por favor, insira o email do remetente';
-              // }
-              // if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-              //   return 'Por favor, insira um email válido';
-              // }
