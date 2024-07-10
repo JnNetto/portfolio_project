@@ -3,12 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../utils/colors.dart';
 
-PreferredSizeWidget appBarCustom(BoxConstraints constraints) {
+PreferredSizeWidget appBarCustom(
+    BoxConstraints constraints, List<Widget> list) {
   return AppBar(
     toolbarHeight: constraints.maxHeight * .1,
     backgroundColor: ColorsApp.appbar,
     shadowColor: ColorsApp.shadowColor,
     elevation: 40,
+    actions: list,
     title: Padding(
       padding: EdgeInsets.only(left: constraints.maxWidth * 0.05),
       child: Text("JnNetto",
