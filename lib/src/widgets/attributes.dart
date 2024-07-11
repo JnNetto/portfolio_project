@@ -49,7 +49,8 @@ class _AttributesState extends State<Attributes> {
           padding: EdgeInsets.symmetric(
               horizontal: constraints.maxWidth > 1050 ? 200 : 50),
           child: Card(
-            color: ColorsApp.card,
+            elevation: 40,
+            color: ColorsApp.background,
             margin: const EdgeInsets.only(bottom: 20.0),
             child: Row(
               children: [
@@ -218,10 +219,13 @@ class _AttributesState extends State<Attributes> {
   }
 
   image(Map habilidade, BoxConstraints constraints) {
-    return Image.memory(
-      base64Decode(habilidade["image"]),
-      width: constraints.maxWidth > 1050 ? 150 : 70,
-      fit: BoxFit.cover,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Image.memory(
+        base64Decode(habilidade["image"]),
+        width: constraints.maxWidth > 1050 ? 150 : 70,
+        fit: BoxFit.cover,
+      ),
     );
   }
 

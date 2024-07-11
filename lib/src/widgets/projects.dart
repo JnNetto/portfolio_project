@@ -57,17 +57,21 @@ Widget sliderProjects(
                 },
               ),
       ),
+      gradientEffect(constraints, Alignment.centerLeft, Alignment.centerRight,
+          Alignment.centerLeft),
+      gradientEffect(constraints, Alignment.centerRight, Alignment.centerLeft,
+          Alignment.centerRight),
       Positioned(
-        left: 10,
-        top: 150,
+        left: constraints.maxWidth > 1050 ? 50 : 10,
+        top: 175,
         child: IconButton(
           icon: const Icon(Icons.arrow_back, size: 25, color: Colors.white70),
           onPressed: () => controller.previousPage(),
         ),
       ),
       Positioned(
-        right: 10,
-        top: 150,
+        right: constraints.maxWidth > 1050 ? 50 : 10,
+        top: 175,
         child: IconButton(
           icon:
               const Icon(Icons.arrow_forward, size: 25, color: Colors.white70),
@@ -75,6 +79,43 @@ Widget sliderProjects(
         ),
       ),
     ],
+  );
+}
+
+gradientEffect(BoxConstraints constraints, Alignment align, Alignment begin,
+    Alignment end) {
+  return Visibility(
+    visible: constraints.maxWidth > 1050,
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: constraints.maxWidth > 1050 ? 248 : 0),
+      child: Align(
+        alignment: align,
+        child: Container(
+          width: 80,
+          height: 400,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: begin,
+              end: end,
+              colors: [
+                Colors.transparent,
+                ColorsApp.background.withOpacity(0.09),
+                ColorsApp.background.withOpacity(0.19),
+                ColorsApp.background.withOpacity(0.29),
+                ColorsApp.background.withOpacity(0.39),
+                ColorsApp.background.withOpacity(0.49),
+                ColorsApp.background.withOpacity(0.59),
+                ColorsApp.background.withOpacity(0.69),
+                ColorsApp.background.withOpacity(0.79),
+                ColorsApp.background.withOpacity(0.89),
+                ColorsApp.background.withOpacity(0.99),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
   );
 }
 

@@ -13,6 +13,8 @@ class SectionScroller {
 
   OverlayEntry? _overlayEntry;
 
+  bool isHovered = false;
+
   void scrollToSection(GlobalKey key) {
     final context = key.currentContext!;
     Scrollable.ensureVisible(context,
@@ -39,11 +41,29 @@ class SectionScroller {
             style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: ColorsApp.letters))),
       ),
-      TextButton(
-        onPressed: () => scrollToSection(attributesKey),
-        child: Text("Atributos",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters))),
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextButton(
+            onPressed: () => scrollToSection(attributesKey),
+            onHover: (value) {
+              isHovered = value;
+            },
+            child: Text(
+              "Atributos",
+              style: GoogleFonts.aBeeZee(
+                textStyle: TextStyle(color: ColorsApp.letters),
+              ),
+            ),
+          ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            height: 2,
+            width: isHovered ? 100 : 0,
+            color: Colors.purple,
+            margin: EdgeInsets.only(top: 4),
+          ),
+        ],
       ),
       TextButton(
         onPressed: () => scrollToSection(contactKey),
