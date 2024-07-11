@@ -119,18 +119,17 @@ class _AttributesState extends State<Attributes> {
         alignment: Alignment.bottomCenter,
         child: ElevatedButton(
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all<Size>(Size(
+            fixedSize: WidgetStateProperty.all<Size>(Size(
                 widget.constraints.maxWidth > 1050 ? 150 : 130,
                 widget.constraints.maxWidth > 1050 ? 35 : 18)),
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.transparent),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0),
                 side: BorderSide(color: ColorsApp.color4, width: 2.0),
               ),
             ),
-            elevation: MaterialStateProperty.all<double>(0),
+            elevation: WidgetStateProperty.all<double>(0),
           ),
           onPressed: () {
             setState(() {
@@ -192,18 +191,17 @@ class _AttributesState extends State<Attributes> {
         alignment: Alignment.bottomCenter,
         child: ElevatedButton(
           style: ButtonStyle(
-            fixedSize: MaterialStateProperty.all<Size>(Size(
+            fixedSize: WidgetStateProperty.all<Size>(Size(
                 widget.constraints.maxWidth > 1050 ? 150 : 130,
                 widget.constraints.maxWidth > 1050 ? 35 : 18)),
-            backgroundColor:
-                MaterialStateProperty.all<Color>(Colors.transparent),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0),
                 side: BorderSide(color: ColorsApp.color4, width: 2.0),
               ),
             ),
-            elevation: MaterialStateProperty.all<double>(0),
+            elevation: WidgetStateProperty.all<double>(0),
           ),
           onPressed: () {
             setState(() {

@@ -266,19 +266,19 @@ class _EmailFormState extends State<EmailForm> {
           const SizedBox(height: 16),
           ElevatedButton(
             style: ButtonStyle(
-              fixedSize: MaterialStateProperty.all<Size>(Size(
+              fixedSize: WidgetStateProperty.all<Size>(Size(
                 widget.constraints.maxWidth > 1050 ? 600 : 300,
                 widget.constraints.maxWidth > 1050 ? 35 : 18,
               )),
               backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.transparent),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  WidgetStateProperty.all<Color>(Colors.transparent),
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0.0),
                   side: BorderSide(color: ColorsApp.color4, width: 2.0),
                 ),
               ),
-              elevation: MaterialStateProperty.all<double>(0),
+              elevation: WidgetStateProperty.all<double>(0),
             ),
             onPressed: _validateForm,
             child: Text(

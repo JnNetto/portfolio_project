@@ -35,7 +35,9 @@ class _HomeState extends State<Home> {
       builder: (context, constraints) {
         return Scaffold(
             appBar: appBarCustom(
-                constraints, _sectionScroller.buildAppBarButtons()),
+                constraints,
+                _sectionScroller.buildAppBarButtons(constraints),
+                _sectionScroller.buildAppBarDrawer(context)),
             body: connection(_info, constraints, _sectionScroller));
       },
     );
