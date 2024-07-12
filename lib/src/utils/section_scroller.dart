@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:portfolio/src/utils/colors.dart';
-import 'package:portfolio/src/utils/hover_button.dart';
+import 'package:portfolio/src/utils/hover_text.dart';
 
 class SectionScroller {
   final ScrollController scrollController = ScrollController();
@@ -23,31 +23,31 @@ class SectionScroller {
 
   List<Widget> buildAppBarButtons(BoxConstraints constraints) {
     return [
-      HoverButton(
+      HoverText(
         text: "Início",
         onPressed: () => scrollToSection(initialInfoKey),
         lettersColor: ColorsApp.letters,
         fontSize: 15,
       ),
-      HoverButton(
+      HoverText(
         text: "Sobre mim",
         onPressed: () => scrollToSection(aboutMeKey),
         lettersColor: ColorsApp.letters,
         fontSize: 15,
       ),
-      HoverButton(
+      HoverText(
         text: "Projetos",
         onPressed: () => scrollToSection(projectsKey),
         lettersColor: ColorsApp.letters,
         fontSize: 15,
       ),
-      HoverButton(
+      HoverText(
         text: "Atributos",
         onPressed: () => scrollToSection(attributesKey),
         lettersColor: ColorsApp.letters,
         fontSize: 15,
       ),
-      HoverButton(
+      HoverText(
         text: "Contato",
         onPressed: () => scrollToSection(contactKey),
         lettersColor: ColorsApp.letters,

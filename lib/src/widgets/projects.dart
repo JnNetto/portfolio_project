@@ -5,7 +5,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:portfolio/src/utils/hover_button.dart';
+import 'package:portfolio/src/utils/hover_text.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/grid_menus.dart';
@@ -209,7 +209,7 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
       const SizedBox(height: 7.5),
       deployedApplication(constraints, context, project: project),
       const SizedBox(height: 7.5),
-      HoverButton(
+      HoverText(
         text: "Ver detalhes",
         onPressed: () {
           details(context, constraints, project: project);
@@ -223,7 +223,7 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
 
 Widget repositoryLink(BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return HoverButton(
+  return HoverText(
     text: "Ver Repositório",
     onPressed: () async {
       await launchUrl(Uri.parse(project["repositoryLink"]));
@@ -235,7 +235,7 @@ Widget repositoryLink(BoxConstraints constraints,
 
 Widget deployedApplication(BoxConstraints constraints, BuildContext context,
     {required Map<String, dynamic> project}) {
-  return HoverButton(
+  return HoverText(
       text: "Ver aplicação no ar",
       onPressed: () async {
         if (project["link"] == "") {
