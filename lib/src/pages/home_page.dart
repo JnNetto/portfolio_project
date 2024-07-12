@@ -80,7 +80,10 @@ Widget connection(Future<Map<String, dynamic>> info, BoxConstraints constraints,
                   Container(
                       key: scroller.attributesKey,
                       child: Attributes(
-                          constraints: constraints, data: snapshot.data!)),
+                        constraints: constraints,
+                        data: snapshot.data!,
+                        attributeKey: scroller.attributesKey,
+                      )),
                   SizedBox(height: constraints.maxWidth > 1050 ? 150 : 100),
                   Container(
                       key: scroller.contactKey,

@@ -2,17 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/section_scroller.dart';
 
 import '../utils/colors.dart';
 
 class Attributes extends StatefulWidget {
   final BoxConstraints constraints;
   final Map<String, dynamic> data;
+  final GlobalKey attributeKey;
 
   const Attributes({
     super.key,
     required this.constraints,
     required this.data,
+    required this.attributeKey,
   });
 
   @override
@@ -87,8 +90,12 @@ class _AttributesState extends State<Attributes> {
       constraints: _isExpanded
           ? BoxConstraints(
               maxHeight: widget.constraints.maxWidth > 1050
-                  ? widget.data["attributes"].length * 180
-                  : widget.data["attributes"].length * 100,
+                  ? (widget.data["attributes"].length * 180) +
+                      20 +
+                      (widget.data["attributes"].length * 10)
+                  : (widget.data["attributes"].length * 100) +
+                      15 +
+                      (widget.data["attributes"].length * 10),
             )
           : BoxConstraints(
               maxHeight: maxHeightEffect,
@@ -96,11 +103,11 @@ class _AttributesState extends State<Attributes> {
       child: Stack(
         children: [
           listView(constraints, data),
-          showLessButton(constraints, isExpanded),
           gradientEffect(
               constraints, data, isExpanded, maxHeightEffect, maxSizeCard),
           showMoreButton(
               constraints, data, isExpanded, maxHeightEffect, maxSizeCard),
+          showLessButton(constraints, isExpanded),
         ],
       ),
     );
@@ -118,28 +125,36 @@ class _AttributesState extends State<Attributes> {
       visible: _isExpanded,
       child: Align(
         alignment: Alignment.bottomCenter,
-        child: ElevatedButton(
-          style: ButtonStyle(
-            fixedSize: WidgetStateProperty.all<Size>(Size(
-                widget.constraints.maxWidth > 1050 ? 150 : 130,
-                widget.constraints.maxWidth > 1050 ? 35 : 18)),
-            backgroundColor: WidgetStateProperty.all<Color>(Colors.transparent),
-            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0.0),
-                side: BorderSide(color: ColorsApp.color4, width: 2.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 100),
+          child: ElevatedButton(
+            style: ButtonStyle(
+              fixedSize: WidgetStateProperty.all<Size>(Size(
+                  widget.constraints.maxWidth > 1050 ? 150 : 150,
+                  widget.constraints.maxWidth > 1050 ? 35 : 18)),
+              backgroundColor:
+                  WidgetStateProperty.all<Color>(Colors.transparent),
+              shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0.0),
+                  side: BorderSide(color: ColorsApp.color4, width: 2.0),
+                ),
               ),
+              elevation: WidgetStateProperty.all<double>(0),
             ),
-            elevation: WidgetStateProperty.all<double>(0),
-          ),
-          onPressed: () {
-            setState(() {
-              _isExpanded = false;
-            });
-          },
-          child: const Text(
-            "Exibir menos",
-            style: TextStyle(color: Colors.white),
+            onPressed: () {
+              setState(() {
+                _isExpanded = false;
+              });
+              final context = widget.attributeKey.currentContext!;
+              Scrollable.ensureVisible(context,
+                  duration: const Duration(seconds: 1),
+                  curve: Curves.easeInOut);
+            },
+            child: const Text(
+              "Exibir menos",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
       ),

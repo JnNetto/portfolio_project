@@ -5,6 +5,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:portfolio/src/utils/hover_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/grid_menus.dart';
@@ -208,83 +209,73 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
       const SizedBox(height: 7.5),
       deployedApplication(constraints, context, project: project),
       const SizedBox(height: 7.5),
-      TextButton(
+      HoverButton(
+        text: "Ver detalhes",
         onPressed: () {
           details(context, constraints, project: project);
         },
-        child: Text(
-          'Ver detalhes',
-          style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 16,
-              color: ColorsApp.letterButton),
-        ),
-      ),
+        lettersColor: ColorsApp.letterButton,
+        fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+      )
     ],
   );
 }
 
 Widget repositoryLink(BoxConstraints constraints,
     {required Map<String, dynamic> project}) {
-  return TextButton(
+  return HoverButton(
+    text: "Ver Repositório",
     onPressed: () async {
       await launchUrl(Uri.parse(project["repositoryLink"]));
     },
-    child: Text(
-      'Ver repositório',
-      style: GoogleFonts.aBeeZee(
-          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
-          color: ColorsApp.letterButton),
-    ),
+    lettersColor: ColorsApp.letterButton,
+    fontSize: constraints.maxWidth > 1050 ? 20 : 16,
   );
 }
 
 Widget deployedApplication(BoxConstraints constraints, BuildContext context,
     {required Map<String, dynamic> project}) {
-  return TextButton(
-    onPressed: () async {
-      if (project["link"] == "") {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: ColorsApp.background,
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: animationLothie(constraints),
-                    ),
-                    SizedBox(
-                      height: constraints.maxWidth > 1050 ? 20 : 10,
-                    ),
-                    Text(
-                      "Parece que ainda não está publicado.",
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 13,
-                          color: ColorsApp.letters),
-                    ),
-                    Text(
-                      "Tente novamente em breve!",
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 13,
-                          color: ColorsApp.letters),
-                    )
-                  ],
-                ),
-              );
-            });
-      } else {
-        await launchUrl(Uri.parse(project["link"]));
-      }
-    },
-    child: Text(
-      'Ver aplicação no ar',
-      style: GoogleFonts.aBeeZee(
-          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
-          color: ColorsApp.letterButton),
-    ),
-  );
+  return HoverButton(
+      text: "Ver aplicação no ar",
+      onPressed: () async {
+        if (project["link"] == "") {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: ColorsApp.background,
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: animationLothie(constraints),
+                      ),
+                      SizedBox(
+                        height: constraints.maxWidth > 1050 ? 20 : 10,
+                      ),
+                      Text(
+                        "Parece que ainda não está publicado.",
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 1050 ? 20 : 13,
+                            color: ColorsApp.letters),
+                      ),
+                      Text(
+                        "Tente novamente em breve!",
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 1050 ? 20 : 13,
+                            color: ColorsApp.letters),
+                      )
+                    ],
+                  ),
+                );
+              });
+        } else {
+          await launchUrl(Uri.parse(project["link"]));
+        }
+      },
+      lettersColor: ColorsApp.letterButton,
+      fontSize: constraints.maxWidth > 1050 ? 20 : 16);
 }
 
 void details(BuildContext context, BoxConstraints constraints,
@@ -382,6 +373,20 @@ Widget functionalities(List<String> funcionalidades) {
 Widget images(List<String> imagens, String plataforma, BuildContext context,
     BoxConstraints constraints) {
   int halfLength = imagens.length <= 3 ? 3 : (imagens.length / 2).ceil();
+  late double? width;
+  if (plataforma == "Mobile") {
+    if (constraints.maxWidth > 1050) {
+      width = 150;
+    } else {
+      width = 70;
+    }
+  } else {
+    if (constraints.maxWidth > 1050) {
+      width = 350;
+    } else {
+      width = 250;
+    }
+  }
   return GridMenus(
     contentLine1: imagens.take(halfLength).map((image) {
       return GestureDetector(
@@ -392,11 +397,7 @@ Widget images(List<String> imagens, String plataforma, BuildContext context,
           padding: const EdgeInsets.all(8.0),
           child: Image.memory(
             base64Decode(image),
-            width: plataforma == "Mobile"
-                ? constraints.maxWidth > 1050
-                    ? 150
-                    : 70
-                : 350,
+            width: width,
             fit: BoxFit.cover,
           ),
         ),
@@ -409,14 +410,7 @@ Widget images(List<String> imagens, String plataforma, BuildContext context,
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Image.memory(
-            base64Decode(image),
-            width: plataforma == "Mobile"
-                ? constraints.maxWidth > 1050
-                    ? 150
-                    : 70
-                : 350,
-          ),
+          child: Image.memory(base64Decode(image), width: width),
         ),
       );
     }).toList(),

@@ -23,12 +23,10 @@ Widget contact(BoxConstraints constraints, BuildContext context,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Expanded(
-                child: EmailForm(
-                  constraints: constraints,
-                ),
+                child: EmailForm(constraints: constraints, data: data),
               ),
               const SizedBox(width: 30),
-              Expanded(child: email(constraints))
+              Expanded(child: email(constraints, data))
             ],
           )
         ],
@@ -49,16 +47,17 @@ Widget contact(BoxConstraints constraints, BuildContext context,
           const SizedBox(height: 32),
           EmailForm(
             constraints: constraints,
+            data: data,
           ),
           const SizedBox(height: 35),
-          email(constraints)
+          email(constraints, data)
         ],
       ),
     );
   }
 }
 
-Widget email(BoxConstraints constraints) {
+Widget email(BoxConstraints constraints, Map data) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +70,7 @@ Widget email(BoxConstraints constraints) {
                 color: ColorsApp.letters)),
       ),
       Text(
-        "jagomes694@gmail.com",
+        data["contact"],
         style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
                 fontSize: constraints.maxWidth > 1050 ? 18 : 14,
@@ -83,8 +82,9 @@ Widget email(BoxConstraints constraints) {
 
 class EmailForm extends StatefulWidget {
   final BoxConstraints constraints;
+  final Map<String, dynamic> data;
 
-  const EmailForm({super.key, required this.constraints});
+  const EmailForm({super.key, required this.constraints, required this.data});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -147,12 +147,14 @@ class _EmailFormState extends State<EmailForm> {
   }
 
   Future<void> _sendMessage() async {
+    final String emailContact = widget.data["contact"];
+
     final String subject = _subjectController.text;
     final String emailText = _emailTextController.text;
     final String name = _nameController.text;
 
     final String mailtoUrl =
-        'mailto:jagomes694@gmail.com?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent('$emailText\n\nFrom: $name')}';
+        'mailto:$emailContact?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent('$emailText\n\nFrom: $name')}';
 
     // ignore: deprecated_member_use
     if (await canLaunch(mailtoUrl)) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:portfolio/src/utils/colors.dart';
+import 'package:portfolio/src/utils/hover_button.dart';
 
 class SectionScroller {
   final ScrollController scrollController = ScrollController();
@@ -23,53 +23,35 @@ class SectionScroller {
 
   List<Widget> buildAppBarButtons(BoxConstraints constraints) {
     return [
-      TextButton(
+      HoverButton(
+        text: "Início",
         onPressed: () => scrollToSection(initialInfoKey),
-        child: Text("Início",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters))),
+        lettersColor: ColorsApp.letters,
+        fontSize: 15,
       ),
-      TextButton(
+      HoverButton(
+        text: "Sobre mim",
         onPressed: () => scrollToSection(aboutMeKey),
-        child: Text("Sobre Mim",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters))),
+        lettersColor: ColorsApp.letters,
+        fontSize: 15,
       ),
-      TextButton(
+      HoverButton(
+        text: "Projetos",
         onPressed: () => scrollToSection(projectsKey),
-        child: Text("Projetos",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters))),
+        lettersColor: ColorsApp.letters,
+        fontSize: 15,
       ),
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextButton(
-            onPressed: () => scrollToSection(attributesKey),
-            onHover: (value) {
-              isHovered = value;
-            },
-            child: Text(
-              "Atributos",
-              style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters),
-              ),
-            ),
-          ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            height: 2,
-            width: isHovered ? 100 : 0,
-            color: Colors.purple,
-            margin: EdgeInsets.only(top: 4),
-          ),
-        ],
+      HoverButton(
+        text: "Atributos",
+        onPressed: () => scrollToSection(attributesKey),
+        lettersColor: ColorsApp.letters,
+        fontSize: 15,
       ),
-      TextButton(
+      HoverButton(
+        text: "Contato",
         onPressed: () => scrollToSection(contactKey),
-        child: Text("Contato",
-            style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: ColorsApp.letters))),
+        lettersColor: ColorsApp.letters,
+        fontSize: 15,
       ),
       SizedBox(
         width: constraints.maxWidth * 0.15,
