@@ -1,7 +1,8 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +14,8 @@ import '../utils/grid_menus.dart';
 
 Widget projects(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
-  final CarouselController controller = CarouselController();
+  final carousel_slider.CarouselController controller =
+      carousel_slider.CarouselController();
   List<Object?> projects = data["projects"];
   return Column(
     children: [
@@ -30,8 +32,8 @@ Widget projects(BoxConstraints constraints,
   );
 }
 
-Widget sliderProjects(
-    BoxConstraints constraints, List projects, CarouselController controller) {
+Widget sliderProjects(BoxConstraints constraints, List projects,
+    carousel_slider.CarouselController controller) {
   return Stack(
     children: [
       Padding(
@@ -39,8 +41,8 @@ Widget sliderProjects(
             horizontal: constraints.maxWidth > 1050 ? 250 : 0),
         child: projects.isEmpty
             ? const Center(child: CircularProgressIndicator())
-            : CarouselSlider.builder(
-                options: CarouselOptions(
+            : carousel_slider.CarouselSlider.builder(
+                options: carousel_slider.CarouselOptions(
                   height: 400,
                   enlargeCenterPage: true,
                   autoPlay: false,
