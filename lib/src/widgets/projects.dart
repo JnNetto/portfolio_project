@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -288,11 +289,12 @@ void details(BuildContext context, BoxConstraints constraints,
       List<String> imagens = List<String>.from(project["images"]);
       String plataforma = project["platform"];
       String minhaFuncao = project["myFunction"];
+      List<String> tecnologias = List<String>.from(project["technologiesUsed"]);
       return Stack(
         children: [
           arrowBackButton(context),
           AlertDialog(
-            backgroundColor: ColorsApp.card,
+            backgroundColor: ColorsApp.backgroundDetails,
             title: Center(
               child: Text("Detalhes",
                   style: GoogleFonts.aBeeZee(
@@ -302,19 +304,102 @@ void details(BuildContext context, BoxConstraints constraints,
             content: SingleChildScrollView(
               child: Column(
                 children: [
-                  Text("Tipo de plataforma: $plataforma",
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
-                          color: ColorsApp.letters)),
-                  const SizedBox(
-                    height: 20,
+                  Visibility(
+                    visible: constraints.maxWidth > 1050,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: [
+                            Text("Tipo de plataforma:",
+                                textAlign: TextAlign.left,
+                                style: GoogleFonts.aBeeZee(
+                                    fontSize:
+                                        constraints.maxWidth > 1050 ? 20 : 18,
+                                    color: ColorsApp.letters)),
+                            Text(plataforma,
+                                textAlign: TextAlign.left,
+                                style: GoogleFonts.aBeeZee(
+                                    fontSize:
+                                        constraints.maxWidth > 1050 ? 20 : 18,
+                                    color: ColorsApp.letters)),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          children: [
+                            Text("Função desempenhada:",
+                                textAlign: TextAlign.left,
+                                style: GoogleFonts.aBeeZee(
+                                    fontSize:
+                                        constraints.maxWidth > 1050 ? 20 : 18,
+                                    color: ColorsApp.letters)),
+                            Text(minhaFuncao,
+                                textAlign: TextAlign.left,
+                                style: GoogleFonts.aBeeZee(
+                                    fontSize:
+                                        constraints.maxWidth > 1050 ? 20 : 18,
+                                    color: ColorsApp.letters)),
+                          ],
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        Column(
+                          children: [
+                            Text("Tecnologias usadas:",
+                                textAlign: TextAlign.left,
+                                style: GoogleFonts.aBeeZee(
+                                    fontSize:
+                                        constraints.maxWidth > 1050 ? 24 : 23,
+                                    color: ColorsApp.letters)),
+                            technologiesUsed(tecnologias),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  Text("Função desempenhada: $minhaFuncao",
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
-                          color: ColorsApp.letters)),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: Text("Tipo de plataforma: $plataforma",
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 1050 ? 20 : 18,
+                            color: ColorsApp.letters)),
+                  ),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: const SizedBox(
+                      height: 20,
+                    ),
+                  ),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: Text("Função desempenhada: $minhaFuncao",
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 1050 ? 20 : 18,
+                            color: ColorsApp.letters)),
+                  ),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: const SizedBox(
+                      height: 20,
+                    ),
+                  ),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: Text("Tecnologias usadas:",
+                        textAlign: TextAlign.left,
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 1050 ? 24 : 23,
+                            color: ColorsApp.letters)),
+                  ),
+                  Visibility(
+                      visible: constraints.maxWidth <= 1050,
+                      child: technologiesUsed(tecnologias)),
                   const SizedBox(
                     height: 20,
                   ),
@@ -364,6 +449,52 @@ Widget functionalities(List<String> funcionalidades) {
         title: Text(
           funcionalidade,
           style: GoogleFonts.aBeeZee(fontSize: 16, color: ColorsApp.letters),
+        ),
+      );
+    }).toList(),
+  );
+}
+
+Widget technologiesUsed(List<String> tecnologias) {
+  Color getRandomColor() {
+    Random random = Random();
+    Color color;
+    do {
+      color = Color.fromRGBO(
+        random.nextInt(256),
+        random.nextInt(256),
+        random.nextInt(256),
+        1.0,
+      );
+    } while (color == Colors.white);
+    return color;
+  }
+
+  Set<Color> usedColors = {};
+
+  Color getUniqueRandomColor() {
+    Color color;
+    do {
+      color = getRandomColor();
+    } while (usedColors.contains(color));
+    usedColors.add(color);
+    return color;
+  }
+
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: tecnologias.map((tech) {
+      Color bgColor = getUniqueRandomColor();
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        decoration: BoxDecoration(
+            color: bgColor, borderRadius: BorderRadius.circular(8)),
+        child: Text(
+          tech,
+          style: const TextStyle(
+            color: Colors.white,
+          ),
         ),
       );
     }).toList(),

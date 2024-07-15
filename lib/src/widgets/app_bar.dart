@@ -12,7 +12,10 @@ PreferredSizeWidget appBarCustom(
     elevation: 40,
     actions: constraints.maxWidth > 1050 ? list : [drawer],
     title: Padding(
-      padding: EdgeInsets.only(left: constraints.maxWidth * 0.15),
+      padding: EdgeInsets.only(
+          left: constraints.maxWidth > 1050
+              ? constraints.maxWidth * 0.15
+              : constraints.maxWidth * 0.05),
       child: Text("JnNetto",
           style: GoogleFonts.poppins(
             textStyle: TextStyle(

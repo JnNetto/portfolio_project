@@ -1,7 +1,8 @@
 import 'package:flutter/widgets.dart';
 
 class ColorsApp {
-  static Color background = const Color.fromARGB(255, 27, 24, 36);
+  static Color background = const Color.fromARGB(255, 7, 2, 22);
+  static Color backgroundDetails = const Color.fromARGB(255, 17, 9, 40);
   static Color card = const Color.fromARGB(255, 37, 30, 61);
   static Color letterButton = const Color.fromARGB(255, 21, 130, 219);
   static Color shadowColor = const Color.fromARGB(255, 59, 46, 139);

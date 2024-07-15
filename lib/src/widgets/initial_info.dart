@@ -18,7 +18,7 @@ Widget initialInfo(BoxConstraints constraints,
         Padding(
           padding: EdgeInsets.symmetric(
               vertical: constraints.maxWidth > 1050
-                  ? 0
+                  ? 200
                   : constraints.maxHeight * .35),
           child: info(constraints, data: data),
         ),
@@ -34,13 +34,10 @@ Widget initialInfo(BoxConstraints constraints,
 }
 
 Widget animationLothie(BoxConstraints constraints) {
-  return Container(
-    margin: const EdgeInsets.only(top: 1, bottom: 10),
-    child: Lottie.asset("assets/animations/cellphone.json",
-        width: constraints.maxWidth > 1050 ? constraints.maxWidth * .35 : 0,
-        height: constraints.maxWidth > 1050 ? constraints.maxHeight * .75 : 0,
-        fit: BoxFit.fill),
-  );
+  return Lottie.asset("assets/animations/cellphone.json",
+      width: constraints.maxWidth > 1050 ? constraints.maxWidth * .35 : 0,
+      height: constraints.maxWidth > 1050 ? constraints.maxHeight * .75 : 0,
+      fit: BoxFit.fill);
 }
 
 // ignore: non_constant_identifier_names

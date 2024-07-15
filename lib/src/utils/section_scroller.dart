@@ -13,12 +13,12 @@ class SectionScroller {
 
   OverlayEntry? _overlayEntry;
 
-  bool isHovered = false;
-
   void scrollToSection(GlobalKey key) {
-    final context = key.currentContext!;
-    Scrollable.ensureVisible(context,
-        duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+    if (key.currentContext != null) {
+      final context = key.currentContext!;
+      Scrollable.ensureVisible(context,
+          duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+    }
   }
 
   List<Widget> buildAppBarButtons(BoxConstraints constraints) {
@@ -69,95 +69,140 @@ class SectionScroller {
         ),
         hoverColor: Colors.grey,
         onPressed: () {
-          showIconMenu(context);
+          _toggleOverlay(context);
         },
       ),
     );
   }
 
-  void showIconMenu(BuildContext context) {
+  void _toggleOverlay(BuildContext context) {
     if (_overlayEntry != null) {
       _overlayEntry?.remove();
       _overlayEntry = null;
     } else {
-      final overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
-      final size = overlay.size;
-
-      _overlayEntry = OverlayEntry(
-        builder: (context) => Positioned(
-          right: size.width * 0.05,
-          top: size.height * 0.4,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.home,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      scrollToSection(initialInfoKey);
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.person, color: Colors.white),
-                    onPressed: () {
-                      scrollToSection(aboutMeKey);
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.build, color: Colors.white),
-                    onPressed: () {
-                      scrollToSection(projectsKey);
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.star, color: Colors.white),
-                    onPressed: () {
-                      scrollToSection(attributesKey);
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.contact_mail, color: Colors.white),
-                    onPressed: () {
-                      scrollToSection(contactKey);
-                      _overlayEntry?.remove();
-                      _overlayEntry = null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
+      _overlayEntry = _createOverlayEntry(context);
       Overlay.of(context).insert(_overlayEntry!);
     }
+  }
+
+  OverlayEntry _createOverlayEntry(BuildContext context) {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final size = overlay.size;
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        right: size.width * 0.05,
+        top: size.height * 0.4,
+        child: _OverlayMenu(
+          onIconPressed: (GlobalKey key) {
+            scrollToSection(key);
+            _toggleOverlay(context);
+          },
+          keys: {
+            'initialInfoKey': initialInfoKey,
+            'aboutMeKey': aboutMeKey,
+            'projectsKey': projectsKey,
+            'attributesKey': attributesKey,
+            'contactKey': contactKey,
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _OverlayMenu extends StatefulWidget {
+  final Function(GlobalKey) onIconPressed;
+  final Map<String, GlobalKey> keys;
+
+  const _OverlayMenu({
+    required this.onIconPressed,
+    required this.keys,
+  });
+
+  @override
+  __OverlayMenuState createState() => __OverlayMenuState();
+}
+
+class __OverlayMenuState extends State<_OverlayMenu>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+    _opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.reverse();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _opacityAnimation,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: [
+              BoxShadow(
+                color: const Color.fromARGB(23, 0, 0, 0).withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.home,
+                  color: Colors.white,
+                ),
+                onPressed: () =>
+                    widget.onIconPressed(widget.keys['initialInfoKey']!),
+              ),
+              IconButton(
+                icon: const Icon(Icons.person, color: Colors.white),
+                onPressed: () =>
+                    widget.onIconPressed(widget.keys['aboutMeKey']!),
+              ),
+              IconButton(
+                icon: const Icon(Icons.build, color: Colors.white),
+                onPressed: () =>
+                    widget.onIconPressed(widget.keys['projectsKey']!),
+              ),
+              IconButton(
+                icon: const Icon(Icons.star, color: Colors.white),
+                onPressed: () =>
+                    widget.onIconPressed(widget.keys['attributesKey']!),
+              ),
+              IconButton(
+                icon: const Icon(Icons.contact_mail, color: Colors.white),
+                onPressed: () =>
+                    widget.onIconPressed(widget.keys['contactKey']!),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

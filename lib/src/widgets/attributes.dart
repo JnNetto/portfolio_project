@@ -72,7 +72,6 @@ class _AttributesState extends State<Attributes> {
             title(),
             listViewAtributtes(widget.constraints, widget.data, _isExpanded,
                 maxHeightEffect, maxSizeCard),
-            Text('Total Height of Cards: $totalHeightCards'),
           ],
         ),
       );
@@ -256,7 +255,7 @@ class _AttributesState extends State<Attributes> {
 
   image(int index, BoxConstraints constraints) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(15.0),
       child: Image.memory(
         _decodedImages[index],
         width: constraints.maxWidth > 1050 ? 150 : 70,

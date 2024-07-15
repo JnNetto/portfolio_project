@@ -28,7 +28,6 @@ Widget infoAboutMe(BoxConstraints constraints,
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
       Expanded(
-        flex: constraints.maxWidth > 1050 ? 2 : 3,
         child: textAboutMe(constraints, data: data),
       ),
       SizedBox(
@@ -51,14 +50,51 @@ Widget animationLottie(BoxConstraints constraints) {
 
 Widget textAboutMe(BoxConstraints constraints,
     {required Map<String, dynamic> data}) {
+  String aboutText = data["about"] ?? "No description";
+  TextStyle defaultStyle = GoogleFonts.aBeeZee(
+    textStyle: TextStyle(
+      fontSize: constraints.maxWidth > 1050 ? 20 : 20,
+      color: ColorsApp.letters,
+    ),
+  );
+  TextStyle highlightedStyle = GoogleFonts.aBeeZee(
+    textStyle: TextStyle(
+      fontSize: constraints.maxWidth > 1050 ? 20 : 20,
+      color: ColorsApp.letterButton, // cor de destaque
+      fontWeight: FontWeight.bold,
+    ),
+  );
+
+  List<TextSpan> textSpans = [];
+  bool highlight = false;
+  StringBuffer buffer = StringBuffer();
+
+  for (int i = 0; i < aboutText.length; i++) {
+    if (aboutText[i] == '\$') {
+      if (buffer.isNotEmpty) {
+        textSpans.add(TextSpan(
+          text: buffer.toString(),
+          style: highlight ? highlightedStyle : defaultStyle,
+        ));
+        buffer.clear();
+      }
+      highlight = !highlight;
+    } else {
+      buffer.write(aboutText[i]);
+    }
+  }
+
+  if (buffer.isNotEmpty) {
+    textSpans.add(TextSpan(
+      text: buffer.toString(),
+      style: highlight ? highlightedStyle : defaultStyle,
+    ));
+  }
+
   return Padding(
     padding: const EdgeInsets.all(8.0),
-    child: Text(
-      data["about"] ?? "No description",
-      style: GoogleFonts.aBeeZee(
-          textStyle: TextStyle(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 20,
-              color: ColorsApp.letters)),
+    child: RichText(
+      text: TextSpan(children: textSpans),
       softWrap: true,
     ),
   );
