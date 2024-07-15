@@ -162,16 +162,30 @@ Widget projectCard(BuildContext context, BoxConstraints constraints,
                       flex: 1,
                       child: SingleChildScrollView(
                           child: buttonsToSee(context, constraints,
-                              project: project)))
+                              project: project))),
+                  Visibility(
+                    visible: constraints.maxWidth <= 1050,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        project["state"],
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: 22, color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            Positioned(
-              bottom: 10,
-              left: 10,
-              child: Text(
-                project["state"],
-                style: GoogleFonts.aBeeZee(fontSize: 22, color: Colors.grey),
+            Visibility(
+              visible: constraints.maxWidth > 1050,
+              child: Positioned(
+                bottom: 10,
+                left: 10,
+                child: Text(
+                  project["state"],
+                  style: GoogleFonts.aBeeZee(fontSize: 22, color: Colors.grey),
+                ),
               ),
             ),
           ],
@@ -209,9 +223,9 @@ Widget buttonsToSee(BuildContext context, BoxConstraints constraints,
   return Column(
     children: [
       repositoryLink(constraints, project: project),
-      const SizedBox(height: 7.5),
+      SizedBox(height: constraints.maxWidth > 1050 ? 7.5 : 0),
       deployedApplication(constraints, context, project: project),
-      const SizedBox(height: 7.5),
+      SizedBox(height: constraints.maxWidth > 1050 ? 7.5 : 0),
       HoverText(
         text: "Ver detalhes",
         onPressed: () {
@@ -252,7 +266,14 @@ Widget deployedApplication(BoxConstraints constraints, BuildContext context,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: animationLothie(constraints),
+                        child: Image.asset("assets/images/construction.png",
+                            width: constraints.maxWidth > 1050
+                                ? constraints.maxWidth * .3
+                                : constraints.maxWidth,
+                            height: constraints.maxWidth > 1050
+                                ? constraints.maxHeight * .5
+                                : constraints.maxHeight * .2,
+                            fit: BoxFit.fill),
                       ),
                       SizedBox(
                         height: constraints.maxWidth > 1050 ? 20 : 10,

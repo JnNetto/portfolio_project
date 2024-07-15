@@ -178,10 +178,16 @@ class _AttributesState extends State<Attributes> {
                   setState(() {
                     _isExpanded = false;
                   });
-                  final context = widget.attributeKey.currentContext!;
-                  Scrollable.ensureVisible(context,
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeInOut);
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Future.delayed(const Duration(milliseconds: 475), () {
+                      if (widget.attributeKey.currentContext != null) {
+                        final context = widget.attributeKey.currentContext!;
+                        Scrollable.ensureVisible(context,
+                            duration: const Duration(seconds: 1),
+                            curve: Curves.easeInOut);
+                      }
+                    });
+                  });
                 },
                 widthMobile: 150,
                 widthWeb: 150,

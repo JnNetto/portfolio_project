@@ -72,7 +72,7 @@ flutter:
     - assets/animations/cellphone.json
     - assets/animations/aboutMe.json
     - assets/animations/computer.json
-    - assets/animations/construction.json
+    - assets/images/construction.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
