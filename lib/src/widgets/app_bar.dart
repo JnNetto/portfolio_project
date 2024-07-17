@@ -11,7 +11,21 @@ PreferredSizeWidget appBarCustom(
     shadowColor: ColorsApp.shadowColor,
     elevation: 40,
     actions: constraints.maxWidth > 1050 ? list : [drawer],
-    title: Padding(
+    title: TitleAppBar(constraints: constraints),
+  );
+}
+
+class TitleAppBar extends StatelessWidget {
+  const TitleAppBar({
+    super.key,
+    required this.constraints,
+  });
+
+  final BoxConstraints constraints;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
       padding: EdgeInsets.only(
           left: constraints.maxWidth > 1050
               ? constraints.maxWidth * 0.15
@@ -23,6 +37,6 @@ PreferredSizeWidget appBarCustom(
                 fontWeight: FontWeight.bold,
                 fontSize: 40),
           )),
-    ),
-  );
+    );
+  }
 }

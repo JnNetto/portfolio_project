@@ -4,87 +4,107 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/colors.dart';
 
-Widget contact(BoxConstraints constraints, BuildContext context,
-    {required Map<String, dynamic> data}) {
-  if (constraints.maxWidth > 1050) {
+class Contact extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Map<String, dynamic> data;
+
+  const Contact({
+    super.key,
+    required this.constraints,
+    required this.data,
+    required BuildContext context,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    bool isLargeScreen = constraints.maxWidth > 1050;
+
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth > 1050 ? 200 : 56),
+      padding: EdgeInsets.symmetric(horizontal: isLargeScreen ? 200 : 56),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("|| Contato ||",
-              style: GoogleFonts.aBeeZee(
-                  textStyle: TextStyle(
-                      fontSize: constraints.maxWidth > 1050 ? 50 : 40,
-                      color: ColorsApp.letters))),
-          const SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(
-                child: EmailForm(constraints: constraints, data: data),
+          Text(
+            "|| Contato ||",
+            style: GoogleFonts.aBeeZee(
+              textStyle: TextStyle(
+                fontSize: isLargeScreen ? 50 : 40,
+                color: ColorsApp.letters,
               ),
-              const SizedBox(width: 30),
-              Expanded(child: email(constraints, data))
-            ],
-          )
-        ],
-      ),
-    );
-  } else {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth > 1050 ? 50 : 56),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text("|| Contato ||",
-              style: GoogleFonts.aBeeZee(
-                  textStyle: TextStyle(
-                      fontSize: constraints.maxWidth > 1050 ? 50 : 40,
-                      color: ColorsApp.letters))),
-          const SizedBox(height: 32),
-          EmailForm(
-            constraints: constraints,
-            data: data,
+            ),
           ),
-          const SizedBox(height: 35),
-          email(constraints, data)
+          const SizedBox(height: 30),
+          if (isLargeScreen)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: EmailForm(constraints: constraints, data: data),
+                ),
+                const SizedBox(width: 30),
+                Expanded(
+                    child: EmailInfo(constraints: constraints, data: data)),
+              ],
+            )
+          else ...[
+            EmailForm(constraints: constraints, data: data),
+            const SizedBox(height: 35),
+            EmailInfo(constraints: constraints, data: data),
+          ],
         ],
       ),
     );
   }
 }
 
-Widget email(BoxConstraints constraints, Map data) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      Text(
-        "Email para contato:",
-        style: GoogleFonts.aBeeZee(
+class EmailInfo extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Map<String, dynamic> data;
+
+  const EmailInfo({
+    super.key,
+    required this.constraints,
+    required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "Email para contato:",
+          style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
-                fontSize: constraints.maxWidth > 1050 ? 30 : 20,
-                color: ColorsApp.letters)),
-      ),
-      Text(
-        data["contact"],
-        style: GoogleFonts.aBeeZee(
+              fontSize: constraints.maxWidth > 1050 ? 30 : 20,
+              color: ColorsApp.letters,
+            ),
+          ),
+        ),
+        Text(
+          data["contact"] ?? "No contact info",
+          style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
-                fontSize: constraints.maxWidth > 1050 ? 18 : 14,
-                color: ColorsApp.letters)),
-      ),
-    ],
-  );
+              fontSize: constraints.maxWidth > 1050 ? 18 : 14,
+              color: ColorsApp.letters,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class EmailForm extends StatefulWidget {
   final BoxConstraints constraints;
   final Map<String, dynamic> data;
 
-  const EmailForm({super.key, required this.constraints, required this.data});
+  const EmailForm({
+    super.key,
+    required this.constraints,
+    required this.data,
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -147,7 +167,7 @@ class _EmailFormState extends State<EmailForm> {
   }
 
   Future<void> _sendMessage() async {
-    final String emailContact = widget.data["contact"];
+    final String emailContact = widget.data["contact"] ?? "";
 
     final String subject = _subjectController.text;
     final String emailText = _emailTextController.text;
@@ -185,93 +205,57 @@ class _EmailFormState extends State<EmailForm> {
       key: _formKey,
       child: Column(
         children: [
-          SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
-            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
-            child: TextFormField(
-              style: TextStyle(
-                color: ColorsApp.letters,
-                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
-              ),
-              controller: _nameController,
-              decoration: _inputDecoration("Nome", _nameHasError),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira o seu nome';
-                }
-                return null;
-              },
-            ),
+          _buildTextFormField(
+            "Nome",
+            _nameController,
+            _nameHasError,
+            (value) => value == null || value.isEmpty
+                ? 'Por favor, insira o seu nome'
+                : null,
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
-            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
-            child: TextFormField(
-              style: TextStyle(
-                color: ColorsApp.letters,
-                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
-              ),
-              controller: _senderEmailController,
-              decoration:
-                  _inputDecoration("Email do remetente", _senderEmailHasError),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira o email do remetente';
-                }
-                if (!_validateEmail(value)) {
-                  return 'Por favor, insira um email válido';
-                }
-                return null;
-              },
-            ),
+          _buildTextFormField(
+            "Email do remetente",
+            _senderEmailController,
+            _senderEmailHasError,
+            (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, insira o email do remetente';
+              }
+              if (!_validateEmail(value)) {
+                return 'Por favor, insira um email válido';
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: widget.constraints.maxWidth > 1050 ? 70 : 55,
-            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
-            child: TextFormField(
-              style: TextStyle(
-                color: ColorsApp.letters,
-                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
-              ),
-              controller: _subjectController,
-              decoration: _inputDecoration("Assunto", _subjectHasError),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira o assunto';
-                }
-                return null;
-              },
-            ),
+          _buildTextFormField(
+            "Assunto",
+            _subjectController,
+            _subjectHasError,
+            (value) => value == null || value.isEmpty
+                ? 'Por favor, insira o assunto'
+                : null,
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            width: widget.constraints.maxWidth > 1050 ? 600 : 300,
-            child: TextFormField(
-              style: TextStyle(
-                color: ColorsApp.letters,
-                fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
-              ),
-              controller: _emailTextController,
-              decoration:
-                  _inputDecoration("Texto do email", _emailTextHasError),
-              maxLines: 6,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira o texto do email';
-                }
-                return null;
-              },
-            ),
+          _buildTextFormField(
+            "Texto do email",
+            _emailTextController,
+            _emailTextHasError,
+            (value) => value == null || value.isEmpty
+                ? 'Por favor, insira o texto do email'
+                : null,
+            maxLines: 6,
           ),
           const SizedBox(height: 16),
           ElevatedButton(
             style: ButtonStyle(
-              fixedSize: WidgetStateProperty.all<Size>(Size(
-                widget.constraints.maxWidth > 1050 ? 600 : 300,
-                widget.constraints.maxWidth > 1050 ? 35 : 18,
-              )),
+              fixedSize: WidgetStateProperty.all<Size>(
+                Size(
+                  widget.constraints.maxWidth > 1050 ? 600 : 300,
+                  widget.constraints.maxWidth > 1050 ? 35 : 18,
+                ),
+              ),
               backgroundColor:
                   WidgetStateProperty.all<Color>(Colors.transparent),
               shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -289,6 +273,33 @@ class _EmailFormState extends State<EmailForm> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextFormField(
+    String label,
+    TextEditingController controller,
+    bool hasError,
+    String? Function(String?)? validator, {
+    int maxLines = 1,
+  }) {
+    return SizedBox(
+      height: maxLines == 1
+          ? widget.constraints.maxWidth > 1050
+              ? 70
+              : 55
+          : null,
+      width: widget.constraints.maxWidth > 1050 ? 600 : 300,
+      child: TextFormField(
+        style: TextStyle(
+          color: ColorsApp.letters,
+          fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+        ),
+        controller: controller,
+        decoration: _inputDecoration(label, hasError),
+        validator: validator,
+        maxLines: maxLines,
       ),
     );
   }

@@ -153,55 +153,66 @@ class __OverlayMenuState extends State<_OverlayMenu>
     return FadeTransition(
       opacity: _opacityAnimation,
       child: Material(
+          color: Colors.transparent,
+          child: OverlayItems(
+              keys: widget.keys, onIconPressed: widget.onIconPressed)),
+    );
+  }
+}
+
+class OverlayItems extends StatelessWidget {
+  final Function(GlobalKey) onIconPressed;
+  final Map<String, GlobalKey> keys;
+
+  const OverlayItems({
+    super.key,
+    required this.onIconPressed,
+    required this.keys,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
         color: Colors.transparent,
-        child: Container(
-          padding: const EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(8.0),
-            boxShadow: [
-              BoxShadow(
-                color: const Color.fromARGB(23, 0, 0, 0).withOpacity(0.2),
-                spreadRadius: 2,
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
+        borderRadius: BorderRadius.circular(8.0),
+        boxShadow: [
+          BoxShadow(
+            color: const Color.fromARGB(23, 0, 0, 0).withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.home,
-                  color: Colors.white,
-                ),
-                onPressed: () =>
-                    widget.onIconPressed(widget.keys['initialInfoKey']!),
-              ),
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white),
-                onPressed: () =>
-                    widget.onIconPressed(widget.keys['aboutMeKey']!),
-              ),
-              IconButton(
-                icon: const Icon(Icons.build, color: Colors.white),
-                onPressed: () =>
-                    widget.onIconPressed(widget.keys['projectsKey']!),
-              ),
-              IconButton(
-                icon: const Icon(Icons.star, color: Colors.white),
-                onPressed: () =>
-                    widget.onIconPressed(widget.keys['attributesKey']!),
-              ),
-              IconButton(
-                icon: const Icon(Icons.contact_mail, color: Colors.white),
-                onPressed: () =>
-                    widget.onIconPressed(widget.keys['contactKey']!),
-              ),
-            ],
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(
+              Icons.home,
+              color: Colors.white,
+            ),
+            onPressed: () => onIconPressed(keys['initialInfoKey']!),
           ),
-        ),
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.white),
+            onPressed: () => onIconPressed(keys['aboutMeKey']!),
+          ),
+          IconButton(
+            icon: const Icon(Icons.build, color: Colors.white),
+            onPressed: () => onIconPressed(keys['projectsKey']!),
+          ),
+          IconButton(
+            icon: const Icon(Icons.star, color: Colors.white),
+            onPressed: () => onIconPressed(keys['attributesKey']!),
+          ),
+          IconButton(
+            icon: const Icon(Icons.contact_mail, color: Colors.white),
+            onPressed: () => onIconPressed(keys['contactKey']!),
+          ),
+        ],
       ),
     );
   }
