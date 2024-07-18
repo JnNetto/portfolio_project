@@ -109,7 +109,7 @@ class ContentSections extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: constraints.maxWidth > 1050 ? 40 : 30),
+      padding: EdgeInsets.only(top: constraints.maxWidth > 480 ? 40 : 30),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -117,17 +117,17 @@ class ContentSections extends StatelessWidget {
               key: sectionScroller.initialInfoKey,
               child: InitialInfo(constraints: constraints, data: data),
             ),
-            SizedBox(height: constraints.maxWidth > 1050 ? 40 : 90),
+            SizedBox(height: constraints.maxWidth > 480 ? 40 : 90),
             Section(
               key: sectionScroller.aboutMeKey,
               child: AboutMe(constraints: constraints, data: data),
             ),
-            SizedBox(height: constraints.maxWidth > 1050 ? 40 : 100),
+            SizedBox(height: constraints.maxWidth > 480 ? 40 : 100),
             Section(
               key: sectionScroller.projectsKey,
               child: Projects(constraints: constraints, data: data),
             ),
-            SizedBox(height: constraints.maxWidth > 1050 ? 100 : 100),
+            SizedBox(height: constraints.maxWidth > 480 ? 100 : 100),
             Section(
               key: sectionScroller.attributesKey,
               child: Attributes(
@@ -136,13 +136,13 @@ class ContentSections extends StatelessWidget {
                 attributeKey: sectionScroller.attributesKey,
               ),
             ),
-            SizedBox(height: constraints.maxWidth > 1050 ? 150 : 100),
+            SizedBox(height: constraints.maxWidth > 480 ? 150 : 100),
             Section(
               key: sectionScroller.contactKey,
               child: Contact(
                   constraints: constraints, context: context, data: data),
             ),
-            SizedBox(height: constraints.maxWidth > 1050 ? 100 : 50),
+            SizedBox(height: constraints.maxWidth > 480 ? 100 : 50),
             Footer(constraints: constraints),
           ],
         ),
@@ -173,7 +173,7 @@ class Footer extends StatelessWidget {
           "© 2024 / João Antônio Gomes / Todos os direitos reservados",
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 12,
+              fontSize: constraints.maxWidth > 480 ? 20 : 12,
               color: ColorsApp.letters,
             ),
           ),

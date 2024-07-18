@@ -51,23 +51,23 @@ class _HoverButtonState extends State<HoverButton> {
                   ],
                 ),
                 width: _isHovered
-                    ? (constraints.maxWidth > 1050
+                    ? (constraints.maxWidth > 480
                         ? widget.widthWeb + 6
                         : widget.widthMobile + 6)
-                    : (constraints.maxWidth > 1050
+                    : (constraints.maxWidth > 480
                         ? widget.widthWeb
                         : widget.widthMobile),
                 height: _isHovered
-                    ? (constraints.maxWidth > 1050 ? 40 : 23)
-                    : (constraints.maxWidth > 1050 ? 35 : 30),
+                    ? (constraints.maxWidth > 480 ? 40 : 23)
+                    : (constraints.maxWidth > 480 ? 35 : 30),
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   style: ButtonStyle(
                     fixedSize: WidgetStateProperty.all<Size>(Size(
-                      constraints.maxWidth > 1050
+                      constraints.maxWidth > 480
                           ? widget.widthWeb
                           : widget.widthMobile,
-                      constraints.maxWidth > 1050 ? 35 : 30,
+                      constraints.maxWidth > 480 ? 35 : 30,
                     )),
                     backgroundColor:
                         WidgetStateProperty.all<Color>(Colors.transparent),

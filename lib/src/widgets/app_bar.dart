@@ -10,7 +10,7 @@ PreferredSizeWidget appBarCustom(
     backgroundColor: ColorsApp.appbar,
     shadowColor: ColorsApp.shadowColor,
     elevation: 40,
-    actions: constraints.maxWidth > 1050 ? list : [drawer],
+    actions: constraints.maxWidth > 480 ? list : [drawer],
     title: TitleAppBar(constraints: constraints),
   );
 }
@@ -27,7 +27,7 @@ class TitleAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: constraints.maxWidth > 1050
+          left: constraints.maxWidth > 480
               ? constraints.maxWidth * 0.15
               : constraints.maxWidth * 0.05),
       child: Text("JnNetto",

@@ -17,7 +17,7 @@ class Contact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLargeScreen = constraints.maxWidth > 1050;
+    bool isLargeScreen = constraints.maxWidth > 480;
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: isLargeScreen ? 200 : 56),
@@ -28,7 +28,7 @@ class Contact extends StatelessWidget {
             "|| Contato ||",
             style: GoogleFonts.aBeeZee(
               textStyle: TextStyle(
-                fontSize: isLargeScreen ? 50 : 40,
+                fontSize: isLargeScreen ? 50 : constraints.maxWidth * .09,
                 color: ColorsApp.letters,
               ),
             ),
@@ -77,7 +77,7 @@ class EmailInfo extends StatelessWidget {
           "Email para contato:",
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
-              fontSize: constraints.maxWidth > 1050 ? 30 : 20,
+              fontSize: constraints.maxWidth > 480 ? 30 : 20,
               color: ColorsApp.letters,
             ),
           ),
@@ -86,7 +86,7 @@ class EmailInfo extends StatelessWidget {
           data["contact"] ?? "No contact info",
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
-              fontSize: constraints.maxWidth > 1050 ? 18 : 14,
+              fontSize: constraints.maxWidth > 480 ? 18 : 14,
               color: ColorsApp.letters,
             ),
           ),
@@ -129,7 +129,7 @@ class _EmailFormState extends State<EmailForm> {
       labelText: hasError ? null : label,
       labelStyle: TextStyle(
         color: ColorsApp.letters,
-        fontSize: widget.constraints.maxWidth > 1050 ? 16 : 11,
+        fontSize: widget.constraints.maxWidth > 480 ? 16 : 11,
       ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
@@ -138,7 +138,7 @@ class _EmailFormState extends State<EmailForm> {
         borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
       ),
       errorStyle: TextStyle(
-        fontSize: widget.constraints.maxWidth > 1050 ? 12 : 10,
+        fontSize: widget.constraints.maxWidth > 480 ? 12 : 10,
         color: Colors.red,
       ),
       hintMaxLines: 1,
@@ -252,8 +252,8 @@ class _EmailFormState extends State<EmailForm> {
             style: ButtonStyle(
               fixedSize: WidgetStateProperty.all<Size>(
                 Size(
-                  widget.constraints.maxWidth > 1050 ? 600 : 300,
-                  widget.constraints.maxWidth > 1050 ? 35 : 18,
+                  widget.constraints.maxWidth > 480 ? 600 : 300,
+                  widget.constraints.maxWidth > 480 ? 35 : 18,
                 ),
               ),
               backgroundColor:
@@ -286,15 +286,15 @@ class _EmailFormState extends State<EmailForm> {
   }) {
     return SizedBox(
       height: maxLines == 1
-          ? widget.constraints.maxWidth > 1050
+          ? widget.constraints.maxWidth > 480
               ? 70
               : 55
           : null,
-      width: widget.constraints.maxWidth > 1050 ? 600 : 300,
+      width: widget.constraints.maxWidth > 480 ? 600 : 300,
       child: TextFormField(
         style: TextStyle(
           color: ColorsApp.letters,
-          fontSize: widget.constraints.maxWidth > 1050 ? 13 : 11,
+          fontSize: widget.constraints.maxWidth > 480 ? 13 : 11,
         ),
         controller: controller,
         decoration: _inputDecoration(label, hasError),

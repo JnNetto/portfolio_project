@@ -54,8 +54,8 @@ class _AttributesState extends State<Attributes> {
 
   @override
   Widget build(BuildContext context) {
-    double maxHeightEffect = widget.constraints.maxWidth > 1050 ? 300 : 250;
-    double maxSizeCard = widget.constraints.maxWidth > 1050 ? 180 : 100;
+    double maxHeightEffect = widget.constraints.maxWidth > 480 ? 300 : 250;
+    double maxSizeCard = widget.constraints.maxWidth > 480 ? 180 : 100;
     return LayoutBuilder(builder: (context, constraints) {
       return Padding(
         padding: const EdgeInsets.only(top: 40),
@@ -128,7 +128,7 @@ class _AttributesList extends StatelessWidget {
       curve: Curves.easeInOut,
       constraints: isExpanded
           ? BoxConstraints(
-              maxHeight: constraints.maxWidth > 1050
+              maxHeight: constraints.maxWidth > 480
                   ? totalHeightCards + 20 + (habilidades.length * 10)
                   : totalHeightCards + 15 + (habilidades.length * 10),
             )
@@ -160,7 +160,7 @@ class _AttributesList extends StatelessWidget {
             maxSizeCard: maxSizeCard,
             dataLength: habilidades.length,
           ),
-          _ToggleExpansionButton(
+          _ShowMoreButton(
             isExpanded: isExpanded,
             toggleExpansion: toggleExpansion,
             constraints: constraints,
@@ -198,7 +198,11 @@ class _AttributeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth > 1050 ? 200 : 50),
+          horizontal: constraints.maxWidth > 480
+              ? constraints.maxWidth > 1050
+                  ? 200
+                  : 100
+              : 50),
       child: LayoutBuilder(builder: (context, constraints) {
         return Card(
           key: cardKey,
@@ -211,7 +215,7 @@ class _AttributeCard extends StatelessWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Image.memory(
                   image,
-                  width: constraints.maxWidth > 1050 ? 150 : 70,
+                  width: constraints.maxWidth > 480 ? 150 : 70,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -223,7 +227,7 @@ class _AttributeCard extends StatelessWidget {
                     Center(
                       child: Text(attribute['title']!,
                           style: TextStyle(
-                              fontSize: constraints.maxWidth > 1050 ? 22 : 20,
+                              fontSize: constraints.maxWidth > 480 ? 22 : 20,
                               color: ColorsApp.letters)),
                     ),
                     const SizedBox(height: 5),
@@ -231,7 +235,7 @@ class _AttributeCard extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 10, right: 10),
                       child: Text(attribute['description']!,
                           style: TextStyle(
-                              fontSize: constraints.maxWidth > 1050 ? 16 : 14,
+                              fontSize: constraints.maxWidth > 480 ? 16 : 14,
                               color: ColorsApp.letters)),
                     ),
                   ],
@@ -245,14 +249,14 @@ class _AttributeCard extends StatelessWidget {
   }
 }
 
-class _ToggleExpansionButton extends StatelessWidget {
+class _ShowMoreButton extends StatelessWidget {
   final bool isExpanded;
   final Function toggleExpansion;
   final BoxConstraints constraints;
   final double totalHeightCards;
   final GlobalKey attributeKey;
 
-  const _ToggleExpansionButton({
+  const _ShowMoreButton({
     required this.isExpanded,
     required this.toggleExpansion,
     required this.constraints,
@@ -353,11 +357,13 @@ class TitleAtributtes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: constraints.maxWidth > 1050 ? 60 : 40),
+      padding: EdgeInsets.only(bottom: constraints.maxWidth > 480 ? 60 : 40),
       child: Text("|| Habilidades ||",
           style: GoogleFonts.aBeeZee(
               textStyle: TextStyle(
-                  fontSize: constraints.maxWidth > 1050 ? 50 : 40,
+                  fontSize: constraints.maxWidth > 480
+                      ? 50
+                      : constraints.maxWidth * .09,
                   color: ColorsApp.letters))),
     );
   }
@@ -384,11 +390,15 @@ class _GradientEffect extends StatelessWidget {
       visible: !isExpanded && dataLength * maxSizeCard > maxHeightEffect,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: constraints.maxWidth > 1050 ? 200 : 50),
+            horizontal: constraints.maxWidth > 480
+                ? constraints.maxWidth > 1050
+                    ? 200
+                    : 100
+                : 50),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: Container(
-            height: constraints.maxWidth > 1050 ? 50 : 200,
+            height: constraints.maxWidth > 480 ? 50 : 200,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,

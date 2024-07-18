@@ -17,17 +17,23 @@ class AboutMe extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth > 1050 ? 200 : 50),
+          horizontal: constraints.maxWidth > 480
+              ? constraints.maxWidth > 1050
+                  ? 200
+                  : 100
+              : 50),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text("|| Sobre mim ||",
               style: GoogleFonts.aBeeZee(
                   textStyle: TextStyle(
-                      fontSize: constraints.maxWidth > 1050 ? 50 : 40,
+                      fontSize: constraints.maxWidth > 480
+                          ? 50
+                          : constraints.maxWidth * .09,
                       color: ColorsApp.letters))),
           Visibility(
-              visible: constraints.maxWidth <= 1050,
+              visible: constraints.maxWidth <= 480,
               child: const SizedBox(
                 height: 40,
               )),
@@ -57,7 +63,7 @@ class InfoAboutMe extends StatelessWidget {
           child: TextAboutMe(constraints: constraints, data: data),
         ),
         SizedBox(
-          height: constraints.maxWidth > 1050 ? 40 : 0,
+          height: constraints.maxWidth > 480 ? 100 : 0,
         ),
         AnimationLottie(constraints: constraints),
       ],
@@ -78,8 +84,7 @@ class AnimationLottie extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: 1, bottom: 10),
       child: Lottie.asset("assets/animations/computer.json",
-          width: constraints.maxWidth > 1050 ? constraints.maxWidth * .35 : 0,
-          height: constraints.maxHeight > 650 ? constraints.maxHeight * .75 : 0,
+          width: constraints.maxWidth > 480 ? constraints.maxWidth * .35 : 0,
           fit: BoxFit.fill),
     );
   }
@@ -101,14 +106,14 @@ class TextAboutMe extends StatelessWidget {
 
     TextStyle defaultStyle = GoogleFonts.aBeeZee(
       textStyle: TextStyle(
-        fontSize: constraints.maxWidth > 1050 ? 20 : 20,
+        fontSize: constraints.maxWidth > 480 ? 20 : 20,
         color: ColorsApp.letters,
       ),
     );
 
     TextStyle highlightedStyle = GoogleFonts.aBeeZee(
       textStyle: TextStyle(
-        fontSize: constraints.maxWidth > 1050 ? 20 : 20,
+        fontSize: constraints.maxWidth > 480 ? 20 : 20,
         color: ColorsApp.letterButton,
         fontWeight: FontWeight.bold,
       ),

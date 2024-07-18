@@ -20,14 +20,14 @@ class InitialInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth > 1050 ? 200 : 0),
+          horizontal: constraints.maxWidth > 480 ? 200 : 0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.symmetric(
-                vertical: constraints.maxWidth > 1050
+                vertical: constraints.maxWidth > 480
                     ? 200
                     : constraints.maxHeight * .35),
             child: Info(constraints: constraints, data: data),
@@ -57,8 +57,8 @@ class AnimationLottie extends StatelessWidget {
   Widget build(BuildContext context) {
     return Lottie.asset(
       "assets/animations/cellphone.json",
-      width: constraints.maxWidth > 1050 ? constraints.maxWidth * .35 : 0,
-      height: constraints.maxWidth > 1050 ? constraints.maxHeight * .75 : 0,
+      width: constraints.maxWidth > 480 ? constraints.maxWidth * .35 : 0,
+      height: constraints.maxWidth > 480 ? constraints.maxHeight * .75 : 0,
       fit: BoxFit.fill,
     );
   }
@@ -150,7 +150,7 @@ class Occupation extends StatelessWidget {
         TypewriterAnimatedText(
           data["occupation"] ?? "No description",
           textStyle: TextStyle(
-            fontSize: constraints.maxWidth > 1050 ? 30 : 25,
+            fontSize: constraints.maxWidth > 480 ? 30 : 25,
             color: ColorsApp.letters,
           ),
           speed: const Duration(milliseconds: 200),
@@ -179,7 +179,7 @@ class Name extends StatelessWidget {
       softWrap: true,
       style: GoogleFonts.aBeeZee(
         textStyle: TextStyle(
-          fontSize: constraints.maxWidth > 1050 ? 50 : 35,
+          fontSize: constraints.maxWidth > 480 ? 50 : 35,
           color: ColorsApp.letters,
         ),
       ),

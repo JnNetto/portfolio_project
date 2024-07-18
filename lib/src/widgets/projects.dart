@@ -24,11 +24,13 @@ class Projects extends StatelessWidget {
       children: [
         Padding(
           padding:
-              EdgeInsets.only(bottom: constraints.maxWidth > 1050 ? 60 : 40),
+              EdgeInsets.only(bottom: constraints.maxWidth > 480 ? 60 : 40),
           child: Text("|| Projetos ||",
               style: GoogleFonts.aBeeZee(
                   textStyle: TextStyle(
-                      fontSize: constraints.maxWidth > 1050 ? 50 : 40,
+                      fontSize: constraints.maxWidth > 480
+                          ? 50
+                          : constraints.maxWidth * .09,
                       color: ColorsApp.letters))),
         ),
         SliderProjects(
@@ -57,7 +59,11 @@ class SliderProjects extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: constraints.maxWidth > 1050 ? 250 : 0),
+              horizontal: constraints.maxWidth > 480
+                  ? constraints.maxWidth > 1050
+                      ? 250
+                      : 100
+                  : 0),
           child: projects.isEmpty
               ? const Center(child: CircularProgressIndicator())
               : carousel_slider.CarouselSlider.builder(
@@ -70,7 +76,7 @@ class SliderProjects extends StatelessWidget {
                     enableInfiniteScroll: true,
                     autoPlayAnimationDuration:
                         const Duration(milliseconds: 800),
-                    viewportFraction: constraints.maxWidth > 1050 ? 0.4 : 0.7,
+                    viewportFraction: constraints.maxWidth > 480 ? 0.4 : 0.7,
                   ),
                   carouselController: controller,
                   itemCount: projects.length,
@@ -93,7 +99,7 @@ class SliderProjects extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight),
         Positioned(
-          left: constraints.maxWidth > 1050 ? 50 : 10,
+          left: constraints.maxWidth > 480 ? 50 : 10,
           top: 175,
           child: IconButton(
             icon: const Icon(Icons.arrow_back, size: 25, color: Colors.white70),
@@ -101,7 +107,7 @@ class SliderProjects extends StatelessWidget {
           ),
         ),
         Positioned(
-          right: constraints.maxWidth > 1050 ? 50 : 10,
+          right: constraints.maxWidth > 480 ? 50 : 10,
           top: 175,
           child: IconButton(
             icon: const Icon(Icons.arrow_forward,
@@ -128,10 +134,14 @@ class GradientEffectWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: constraints.maxWidth > 1050,
+      visible: constraints.maxWidth > 480,
       child: Padding(
         padding: EdgeInsets.symmetric(
-            horizontal: constraints.maxWidth > 1050 ? 248 : 0),
+            horizontal: constraints.maxWidth > 480
+                ? constraints.maxWidth > 1050
+                    ? 248
+                    : 98
+                : 0),
         child: Align(
           alignment: align,
           child: Container(
@@ -174,15 +184,15 @@ class ProjectCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-          minWidth: constraints.maxWidth > 1050 ? 500 : 250,
-          maxWidth: constraints.maxWidth > 1050 ? 500 : 250),
+          minWidth: constraints.maxWidth > 480 ? 500 : 250,
+          maxWidth: constraints.maxWidth > 480 ? 500 : 250),
       child: Container(
         decoration: BoxDecoration(
           color: ColorsApp.card,
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(
             color: ColorsApp.shadowColor,
-            width: constraints.maxWidth > 1050 ? 6 : 4,
+            width: constraints.maxWidth > 480 ? 6 : 4,
           ),
           boxShadow: [
             BoxShadow(
@@ -212,7 +222,7 @@ class ProjectCardWidget extends StatelessWidget {
                             child: ButtonsToSeeWidget(
                                 constraints: constraints, project: project))),
                     Visibility(
-                      visible: constraints.maxWidth <= 1050,
+                      visible: constraints.maxWidth <= 480,
                       child: Align(
                         alignment: Alignment.bottomLeft,
                         child: Text(
@@ -226,7 +236,7 @@ class ProjectCardWidget extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible: constraints.maxWidth > 1050,
+                visible: constraints.maxWidth > 480,
                 child: Positioned(
                   bottom: 10,
                   left: 10,
@@ -258,8 +268,10 @@ class TextsWidget extends StatelessWidget {
       children: [
         Text(
           project["name"],
+          textAlign: TextAlign.center,
           style: GoogleFonts.aBeeZee(
-              fontSize: 30,
+              fontSize:
+                  constraints.maxWidth > 480 ? 30 : constraints.maxWidth * .07,
               fontWeight: FontWeight.bold,
               color: ColorsApp.letters),
         ),
@@ -267,7 +279,8 @@ class TextsWidget extends StatelessWidget {
           project["description"],
           textAlign: TextAlign.center,
           style: GoogleFonts.aBeeZee(
-              fontSize: constraints.maxWidth > 1050 ? 20 : 15,
+              fontSize:
+                  constraints.maxWidth > 480 ? 20 : constraints.maxWidth * .035,
               fontWeight: FontWeight.bold,
               color: ColorsApp.letters),
         ),
@@ -288,9 +301,9 @@ class ButtonsToSeeWidget extends StatelessWidget {
     return Column(
       children: [
         RepositoryLinkWidget(constraints: constraints, project: project),
-        SizedBox(height: constraints.maxWidth > 1050 ? 7.5 : 0),
+        SizedBox(height: constraints.maxWidth > 480 ? 7.5 : 0),
         DeployedApplicationWidget(constraints: constraints, project: project),
-        SizedBox(height: constraints.maxWidth > 1050 ? 7.5 : 0),
+        SizedBox(height: constraints.maxWidth > 480 ? 7.5 : 0),
         HoverText(
           text: "Ver detalhes",
           onPressed: () {
@@ -298,7 +311,11 @@ class ButtonsToSeeWidget extends StatelessWidget {
                 constraints: constraints, project: project);
           },
           lettersColor: ColorsApp.letterButton,
-          fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+          fontSize: constraints.maxWidth > 480
+              ? constraints.maxWidth > 1050
+                  ? 20
+                  : constraints.maxWidth * .015
+              : constraints.maxWidth * .04,
         )
       ],
     );
@@ -323,7 +340,11 @@ class RepositoryLinkWidget extends StatelessWidget {
         }
       },
       lettersColor: ColorsApp.letterButton,
-      fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+      fontSize: constraints.maxWidth > 480
+          ? constraints.maxWidth > 1050
+              ? 20
+              : constraints.maxWidth * .015
+          : constraints.maxWidth * .04,
     );
   }
 }
@@ -338,7 +359,7 @@ class DeployedApplicationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HoverText(
-      text: "Ver aplicação em produção",
+      text: "Ver aplicação no ar",
       onPressed: () async {
         final Uri url = Uri.parse(project["urlRepository"]);
         if (await canLaunchUrl(url)) {
@@ -346,7 +367,11 @@ class DeployedApplicationWidget extends StatelessWidget {
         }
       },
       lettersColor: ColorsApp.letterButton,
-      fontSize: constraints.maxWidth > 1050 ? 20 : 16,
+      fontSize: constraints.maxWidth > 480
+          ? constraints.maxWidth > 1050
+              ? 20
+              : constraints.maxWidth * .015
+          : constraints.maxWidth * .04,
     );
   }
 }
@@ -381,150 +406,56 @@ class DetailsDialog extends StatelessWidget {
     List<String> tecnologias = List<String>.from(project["technologiesUsed"]);
     return Stack(
       children: [
-        arrowBackButton(context),
         AlertDialog(
           backgroundColor: ColorsApp.backgroundDetails,
           title: Center(
             child: Text("Detalhes",
                 style: GoogleFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 1050 ? 32 : 26,
+                    fontSize: constraints.maxWidth > 480 ? 32 : 26,
                     color: ColorsApp.letters)),
           ),
           content: SingleChildScrollView(
             child: Column(
               children: [
-                Visibility(
-                  visible: constraints.maxWidth > 1050,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          Text("Tipo de plataforma:",
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.aBeeZee(
-                                  fontSize:
-                                      constraints.maxWidth > 1050 ? 20 : 18,
-                                  color: ColorsApp.letters)),
-                          Text(plataforma,
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.aBeeZee(
-                                  fontSize:
-                                      constraints.maxWidth > 1050 ? 20 : 18,
-                                  color: ColorsApp.letters)),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        children: [
-                          Text("Função desempenhada:",
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.aBeeZee(
-                                  fontSize:
-                                      constraints.maxWidth > 1050 ? 20 : 18,
-                                  color: ColorsApp.letters)),
-                          Text(minhaFuncao,
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.aBeeZee(
-                                  fontSize:
-                                      constraints.maxWidth > 1050 ? 20 : 18,
-                                  color: ColorsApp.letters)),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Column(
-                        children: [
-                          Text("Tecnologias usadas:",
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.aBeeZee(
-                                  fontSize:
-                                      constraints.maxWidth > 1050 ? 24 : 23,
-                                  color: ColorsApp.letters)),
-                          technologiesUsed(tecnologias),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Visibility(
-                  visible: constraints.maxWidth <= 1050,
-                  child: Text("Tipo de plataforma: $plataforma",
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
-                          color: ColorsApp.letters)),
-                ),
-                Visibility(
-                  visible: constraints.maxWidth <= 1050,
-                  child: const SizedBox(
-                    height: 20,
-                  ),
-                ),
-                Visibility(
-                  visible: constraints.maxWidth <= 1050,
-                  child: Text("Função desempenhada: $minhaFuncao",
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 20 : 18,
-                          color: ColorsApp.letters)),
-                ),
-                Visibility(
-                  visible: constraints.maxWidth <= 1050,
-                  child: const SizedBox(
-                    height: 20,
-                  ),
-                ),
-                Visibility(
-                  visible: constraints.maxWidth <= 1050,
-                  child: Text("Tecnologias usadas:",
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 1050 ? 24 : 23,
-                          color: ColorsApp.letters)),
-                ),
-                Visibility(
-                    visible: constraints.maxWidth <= 1050,
-                    child: technologiesUsed(tecnologias)),
-                const SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: constraints.maxWidth > 480 ? 30 : 15),
+                if (constraints.maxWidth > 480)
+                  WebDetails(
+                      constraints: constraints,
+                      technologiesUsed: technologiesUsed(tecnologias),
+                      plataforma: plataforma,
+                      minhaFuncao: minhaFuncao),
+                if (constraints.maxWidth <= 480)
+                  MobileDetails(
+                      constraints: constraints,
+                      technologiesUsed: technologiesUsed(tecnologias),
+                      plataforma: plataforma,
+                      minhaFuncao: minhaFuncao),
+                SizedBox(height: constraints.maxWidth > 480 ? 30 : 20),
                 Text("Funcionalidades do projeto",
                     style: GoogleFonts.aBeeZee(
-                        fontSize: constraints.maxWidth > 1050 ? 24 : 23,
+                        fontSize: constraints.maxWidth > 480
+                            ? 24
+                            : constraints.maxWidth * .05,
                         color: ColorsApp.letters)),
-                functionalities(funcionalidades),
+                Funtionalities(funcionalidades: funcionalidades),
                 const SizedBox(
-                  height: 20,
+                  height: 30,
                 ),
                 Text("Imagens do projeto",
                     style: GoogleFonts.aBeeZee(
-                        fontSize: constraints.maxWidth > 1050 ? 24 : 23,
+                        fontSize: constraints.maxWidth > 480 ? 24 : 23,
                         color: ColorsApp.letters)),
-                images(imagens, plataforma, context, constraints),
+                Images(
+                    images: imagens,
+                    plataforma: plataforma,
+                    context: context,
+                    constraints: constraints),
               ],
             ),
           ),
         ),
+        ArrowBackButton(context: context),
       ],
-    );
-  }
-
-  Widget functionalities(List<String> funcionalidades) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: funcionalidades.map((funcionalidade) {
-        return ListTile(
-          leading: Icon(Icons.check, color: ColorsApp.letters),
-          title: Text(
-            funcionalidade,
-            style: GoogleFonts.aBeeZee(fontSize: 16, color: ColorsApp.letters),
-          ),
-        );
-      }).toList(),
     );
   }
 
@@ -573,26 +504,186 @@ class DetailsDialog extends StatelessWidget {
       }).toList(),
     );
   }
+}
 
-  Widget images(List<String> imagens, String plataforma, BuildContext context,
-      BoxConstraints constraints) {
-    int halfLength = imagens.length <= 3 ? 3 : (imagens.length / 2).ceil();
+class MobileDetails extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Widget technologiesUsed;
+  final String plataforma;
+  final String minhaFuncao;
+
+  const MobileDetails(
+      {super.key,
+      required this.constraints,
+      required this.technologiesUsed,
+      required this.plataforma,
+      required this.minhaFuncao});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text("Tipo de plataforma:",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                color: ColorsApp.letters)),
+        Text(plataforma,
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                color: ColorsApp.letters)),
+        const SizedBox(
+          height: 20,
+        ),
+        Text("Função desempenhada:",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                color: ColorsApp.letters)),
+        Text(minhaFuncao,
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                color: ColorsApp.letters)),
+        const SizedBox(
+          height: 20,
+        ),
+        Text("Tecnologias usadas:",
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 24 : 23,
+                color: ColorsApp.letters)),
+        technologiesUsed,
+      ],
+    );
+  }
+}
+
+class WebDetails extends StatelessWidget {
+  final BoxConstraints constraints;
+  final Widget technologiesUsed;
+  final String plataforma;
+  final String minhaFuncao;
+
+  const WebDetails(
+      {super.key,
+      required this.constraints,
+      required this.technologiesUsed,
+      required this.plataforma,
+      required this.minhaFuncao});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Column(
+          children: [
+            Text("Tipo de plataforma:",
+                textAlign: TextAlign.left,
+                style: GoogleFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                    color: ColorsApp.letters)),
+            Text(plataforma,
+                textAlign: TextAlign.left,
+                style: GoogleFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                    color: ColorsApp.letters)),
+          ],
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        Column(
+          children: [
+            Text("Função desempenhada:",
+                textAlign: TextAlign.left,
+                style: GoogleFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                    color: ColorsApp.letters)),
+            Text(minhaFuncao,
+                textAlign: TextAlign.left,
+                style: GoogleFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                    color: ColorsApp.letters)),
+          ],
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        Column(
+          children: [
+            Text("Tecnologias usadas:",
+                textAlign: TextAlign.left,
+                style: GoogleFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 24 : 23,
+                    color: ColorsApp.letters)),
+            technologiesUsed,
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class Images extends StatelessWidget {
+  final BoxConstraints constraints;
+  final List<String> images;
+  final String plataforma;
+  final BuildContext context;
+
+  const Images(
+      {super.key,
+      required this.constraints,
+      required this.images,
+      required this.plataforma,
+      required this.context});
+
+  @override
+  Widget build(BuildContext context) {
+    dynamic zoom(
+      BuildContext context,
+      String image,
+    ) {
+      return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Image.memory(
+                    base64Decode(image),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                ArrowBackButton(context: context)
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    int halfLength = images.length <= 3 ? 3 : (images.length / 2).ceil();
     late double? width;
     if (plataforma == "Mobile") {
-      if (constraints.maxWidth > 1050) {
+      if (constraints.maxWidth > 480) {
         width = 150;
       } else {
         width = 70;
       }
     } else {
-      if (constraints.maxWidth > 1050) {
+      if (constraints.maxWidth > 480) {
         width = 350;
       } else {
         width = 250;
       }
     }
     return GridMenus(
-      contentLine1: imagens.take(halfLength).map((image) {
+      contentLine1: images.take(halfLength).map((image) {
         return GestureDetector(
           onTap: () {
             zoom(context, image);
@@ -607,7 +698,7 @@ class DetailsDialog extends StatelessWidget {
           ),
         );
       }).toList(),
-      contentLine2: imagens.skip(halfLength).map((image) {
+      contentLine2: images.skip(halfLength).map((image) {
         return GestureDetector(
           onTap: () {
             zoom(context, image);
@@ -620,37 +711,54 @@ class DetailsDialog extends StatelessWidget {
       }).toList(),
     );
   }
+}
 
-  dynamic zoom(
-    BuildContext context,
-    String image,
-  ) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.memory(
-                  base64Decode(image),
-                  fit: BoxFit.contain,
-                ),
-              ),
-              arrowBackButton(context)
-            ],
+class Funtionalities extends StatelessWidget {
+  const Funtionalities({
+    super.key,
+    required this.funcionalidades,
+  });
+
+  final List<String> funcionalidades;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: funcionalidades.map((funcionalidade) {
+        return ListTile(
+          leading: Icon(Icons.check, color: ColorsApp.letters),
+          title: Text(
+            funcionalidade,
+            style: GoogleFonts.aBeeZee(fontSize: 16, color: ColorsApp.letters),
           ),
         );
-      },
+      }).toList(),
     );
   }
+}
 
-  Widget arrowBackButton(BuildContext context) {
+class ArrowBackButton extends StatelessWidget {
+  final BuildContext context;
+
+  const ArrowBackButton({super.key, required this.context});
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned(
       top: 16,
       left: 16,
       child: IconButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.all(ColorsApp.card),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          shadowColor: WidgetStateProperty.all(ColorsApp.shadowColor),
+          elevation: WidgetStateProperty.all(10),
+        ),
         onPressed: () {
           Navigator.pop(context);
         },
