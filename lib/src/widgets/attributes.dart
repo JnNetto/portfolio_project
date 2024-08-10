@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,8 +30,8 @@ class _AttributesState extends State<Attributes> {
   @override
   void initState() {
     super.initState();
-    _decodedImages = widget.data["attributes"]
-        .map<Uint8List>((attribute) => base64Decode(attribute["image"]))
+    _decodedImages = List<Map>.from(widget.data["attributes"])
+        .map((attribute) => attribute["image"] as Uint8List)
         .toList();
     _cardKeys =
         List.generate(widget.data["attributes"].length, (index) => GlobalKey());
@@ -62,19 +61,27 @@ class _AttributesState extends State<Attributes> {
         child: Column(
           children: [
             TitleAtributtes(constraints: widget.constraints),
-            _AttributesList(
-              constraints: widget.constraints,
-              data: widget.data,
-              isExpanded: _isExpanded,
-              maxHeightEffect: maxHeightEffect,
-              maxSizeCard: maxSizeCard,
-              cardKeys: _cardKeys,
-              decodedImages: _decodedImages,
-              calculateTotalHeight: _calculateTotalHeight,
-              toggleExpansion: _toggleExpansion,
-              totalHeightCards: totalHeightCards,
-              attributeKey: widget.attributeKey,
-            ),
+            widget.data.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30),
+                    child: Text("Não há habilidades",
+                        style: GoogleFonts.aBeeZee(
+                            fontSize: constraints.maxWidth > 480 ? 18 : 16,
+                            color: Colors.grey)),
+                  )
+                : _AttributesList(
+                    constraints: widget.constraints,
+                    data: widget.data,
+                    isExpanded: _isExpanded,
+                    maxHeightEffect: maxHeightEffect,
+                    maxSizeCard: maxSizeCard,
+                    cardKeys: _cardKeys,
+                    decodedImages: _decodedImages,
+                    calculateTotalHeight: _calculateTotalHeight,
+                    toggleExpansion: _toggleExpansion,
+                    totalHeightCards: totalHeightCards,
+                    attributeKey: widget.attributeKey,
+                  ),
           ],
         ),
       );
@@ -279,7 +286,10 @@ class _ShowMoreButton extends StatelessWidget {
             toggleExpansion();
             if (totalHeightCards == 0) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Future.delayed(const Duration(milliseconds: 475), () {
+                Future.delayed(
+                    Duration(
+                        milliseconds: constraints.maxWidth > 480 ? 475 : 500),
+                    () {
                   if (attributeKey.currentContext != null) {
                     Scrollable.ensureVisible(attributeKey.currentContext!,
                         duration: const Duration(seconds: 1),
@@ -327,7 +337,10 @@ class _ShowLessButton extends StatelessWidget {
             onPressed: () {
               toggleExpansion();
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Future.delayed(const Duration(milliseconds: 475), () {
+                Future.delayed(
+                    Duration(
+                        milliseconds: constraints.maxWidth > 480 ? 475 : 500),
+                    () {
                   if (attributeKey.currentContext != null) {
                     Scrollable.ensureVisible(attributeKey.currentContext!,
                         duration: const Duration(seconds: 1),
@@ -392,9 +405,9 @@ class _GradientEffect extends StatelessWidget {
         padding: EdgeInsets.symmetric(
             horizontal: constraints.maxWidth > 480
                 ? constraints.maxWidth > 1050
-                    ? 200
-                    : 100
-                : 50),
+                    ? 198
+                    : 98
+                : 48),
         child: Align(
           alignment: Alignment.bottomCenter,
           child: Container(

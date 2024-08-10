@@ -113,7 +113,7 @@ class SocialNetwork extends StatelessWidget {
             item["icon"],
             color: Colors.white,
           ),
-          hoverColor: Colors.grey,
+          hoverColor: ColorsApp.hoverButton,
           onPressed: () async {
             await launchUrl(Uri.parse(item["url"]));
           },

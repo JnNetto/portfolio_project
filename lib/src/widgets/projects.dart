@@ -1,11 +1,12 @@
-import 'dart:convert';
 import 'dart:math';
-import 'package:carousel_slider/carousel_slider.dart' as carousel_slider;
+import 'dart:typed_data';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/controllers/home_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
+import '../utils/custom_carousel_slider.dart';
 import '../utils/grid_menus.dart';
 import 'package:portfolio/src/utils/hover_text.dart';
 
@@ -17,8 +18,7 @@ class Projects extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final carousel_slider.CarouselController controller =
-        carousel_slider.CarouselController();
+    final controller = CustomCarouselController();
     List<Object?> projects = data["projects"];
     return Column(
       children: [
@@ -45,7 +45,7 @@ class Projects extends StatelessWidget {
 class SliderProjects extends StatelessWidget {
   final BoxConstraints constraints;
   final List projects;
-  final carousel_slider.CarouselController controller;
+  final CustomCarouselController controller;
 
   const SliderProjects(
       {super.key,
@@ -55,6 +55,14 @@ class SliderProjects extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> items = projects.map((projectMap) {
+      final project = Map<String, dynamic>.from(projectMap);
+      return ProjectCardWidget(
+        constraints: constraints,
+        project: project,
+      );
+    }).toList();
+
     return Stack(
       children: [
         Padding(
@@ -65,27 +73,22 @@ class SliderProjects extends StatelessWidget {
                       : 100
                   : 0),
           child: projects.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : carousel_slider.CarouselSlider.builder(
-                  options: carousel_slider.CarouselOptions(
-                    height: 400,
-                    enlargeCenterPage: true,
-                    autoPlay: false,
-                    aspectRatio: 16 / 9,
-                    autoPlayCurve: Curves.easeInExpo,
-                    enableInfiniteScroll: true,
-                    autoPlayAnimationDuration:
-                        const Duration(milliseconds: 800),
-                    viewportFraction: constraints.maxWidth > 480 ? 0.4 : 0.7,
-                  ),
-                  carouselController: controller,
-                  itemCount: projects.length,
-                  itemBuilder: (context, index, realIdx) {
-                    final project = Map<String, dynamic>.from(
-                        projects[index] as Map); // Evita conversão dupla
-                    return ProjectCardWidget(
-                        constraints: constraints, project: project);
-                  },
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Text("Não há projetos",
+                      style: GoogleFonts.aBeeZee(
+                          fontSize: constraints.maxWidth > 480 ? 18 : 16,
+                          color: Colors.grey)),
+                )
+              : CustomCarouselSlider(
+                  items: items,
+                  height: 400,
+                  enlargeCenterPage: true,
+                  autoPlay: false,
+                  autoPlayAnimationDuration: const Duration(milliseconds: 600),
+                  autoPlayCurve: Curves.easeIn,
+                  viewportFraction: constraints.maxWidth > 480 ? 0.65 : 0.75,
+                  controller: controller,
                 ),
         ),
         GradientEffectWidget(
@@ -99,19 +102,24 @@ class SliderProjects extends StatelessWidget {
             begin: Alignment.centerLeft,
             end: Alignment.centerRight),
         Positioned(
-          left: constraints.maxWidth > 480 ? 50 : 10,
+          left: constraints.maxWidth > 480 ? 100 : 10,
           top: 175,
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 25, color: Colors.white70),
+            hoverColor: ColorsApp.hoverButton,
+            icon: Icon(Icons.arrow_back,
+                size: constraints.maxWidth > 480 ? 40 : 25,
+                color: Colors.white70),
             onPressed: () => controller.previousPage(),
           ),
         ),
         Positioned(
-          right: constraints.maxWidth > 480 ? 50 : 10,
+          right: constraints.maxWidth > 480 ? 100 : 10,
           top: 175,
           child: IconButton(
-            icon: const Icon(Icons.arrow_forward,
-                size: 25, color: Colors.white70),
+            hoverColor: ColorsApp.hoverButton,
+            icon: Icon(Icons.arrow_forward_outlined,
+                size: constraints.maxWidth > 480 ? 40 : 25,
+                color: Colors.white70),
             onPressed: () => controller.nextPage(),
           ),
         ),
@@ -275,6 +283,9 @@ class TextsWidget extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: ColorsApp.letters),
         ),
+        SizedBox(
+          height: constraints.maxWidth > 480 ? 15 : 10,
+        ),
         Text(
           project["description"],
           textAlign: TextAlign.center,
@@ -314,7 +325,7 @@ class ButtonsToSeeWidget extends StatelessWidget {
           fontSize: constraints.maxWidth > 480
               ? constraints.maxWidth > 1050
                   ? 20
-                  : constraints.maxWidth * .015
+                  : constraints.maxWidth * .02
               : constraints.maxWidth * .04,
         )
       ],
@@ -334,7 +345,7 @@ class RepositoryLinkWidget extends StatelessWidget {
     return HoverText(
       text: "Ver Repositório",
       onPressed: () async {
-        final Uri url = Uri.parse(project["urlGitHub"]);
+        final Uri url = Uri.parse(project["repositoryLink"]);
         if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
         }
@@ -343,7 +354,7 @@ class RepositoryLinkWidget extends StatelessWidget {
       fontSize: constraints.maxWidth > 480
           ? constraints.maxWidth > 1050
               ? 20
-              : constraints.maxWidth * .015
+              : constraints.maxWidth * .02
           : constraints.maxWidth * .04,
     );
   }
@@ -361,17 +372,74 @@ class DeployedApplicationWidget extends StatelessWidget {
     return HoverText(
       text: "Ver aplicação no ar",
       onPressed: () async {
-        final Uri url = Uri.parse(project["urlRepository"]);
-        if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
+        if (project["link"] != "") {
+          final Uri url = Uri.parse(project["link"]);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          }
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CustomDialog(
+                constraints: constraints,
+              );
+            },
+          );
         }
       },
       lettersColor: ColorsApp.letterButton,
       fontSize: constraints.maxWidth > 480
           ? constraints.maxWidth > 1050
               ? 20
-              : constraints.maxWidth * .015
+              : constraints.maxWidth * .02
           : constraints.maxWidth * .04,
+    );
+  }
+}
+
+class CustomDialog extends StatelessWidget {
+  final BoxConstraints constraints;
+  const CustomDialog({super.key, required this.constraints});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: ColorsApp.backgroundDetails,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/images/construction.png',
+            height: constraints.maxWidth > 480 ? 300 : 200,
+            width: constraints.maxWidth > 480 ? 300 : 200,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Estamos trabalhando nisso',
+            style: GoogleFonts.aBeeZee(
+                fontSize: constraints.maxWidth > 480 ? 20 : 18,
+                color: ColorsApp.letters),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        Align(
+          alignment: Alignment.bottomRight,
+          child: TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Fechar',
+              style: GoogleFonts.aBeeZee(
+                  fontSize: constraints.maxWidth > 480 ? 15 : 13,
+                  color: ColorsApp.letters),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -398,12 +466,13 @@ class DetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController controller = HomeController();
     List<String> funcionalidades =
         List<String>.from(project["functionalities"]);
-    List<String> imagens = List<String>.from(project["images"]);
     String plataforma = project["platform"];
     String minhaFuncao = project["myFunction"];
     List<String> tecnologias = List<String>.from(project["technologiesUsed"]);
+
     return Stack(
       children: [
         AlertDialog(
@@ -445,11 +514,41 @@ class DetailsDialog extends StatelessWidget {
                     style: GoogleFonts.aBeeZee(
                         fontSize: constraints.maxWidth > 480 ? 24 : 23,
                         color: ColorsApp.letters)),
-                Images(
-                    images: imagens,
-                    plataforma: plataforma,
-                    context: context,
-                    constraints: constraints),
+                FutureBuilder<List<Uint8List>>(
+                  future: controller.fetchImages(project["name"]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 50),
+                        child: CircularProgressIndicator(),
+                      ));
+                    } else if (snapshot.hasError) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Text("Erro ao carregar imagens",
+                            style: GoogleFonts.aBeeZee(
+                                fontSize: constraints.maxWidth > 480 ? 18 : 16,
+                                color: Colors.red)),
+                      );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Text("Nenhuma imagem disponível",
+                            style: GoogleFonts.aBeeZee(
+                                fontSize: constraints.maxWidth > 480 ? 18 : 16,
+                                color: Colors.grey)),
+                      );
+                    } else {
+                      return Images(
+                        images: snapshot.data!,
+                        plataforma: plataforma,
+                        context: context,
+                        constraints: constraints,
+                      );
+                    }
+                  },
+                ),
               ],
             ),
           ),
@@ -629,7 +728,7 @@ class WebDetails extends StatelessWidget {
 
 class Images extends StatelessWidget {
   final BoxConstraints constraints;
-  final List<String> images;
+  final List<Uint8List> images;
   final String plataforma;
   final BuildContext context;
 
@@ -644,7 +743,7 @@ class Images extends StatelessWidget {
   Widget build(BuildContext context) {
     dynamic zoom(
       BuildContext context,
-      String image,
+      Uint8List image,
     ) {
       return showDialog(
         context: context,
@@ -655,7 +754,7 @@ class Images extends StatelessWidget {
               children: [
                 Positioned.fill(
                   child: Image.memory(
-                    base64Decode(image),
+                    image,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -691,7 +790,7 @@ class Images extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.memory(
-              base64Decode(image),
+              image,
               width: width,
               fit: BoxFit.cover,
             ),
@@ -705,7 +804,7 @@ class Images extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.memory(base64Decode(image), width: width),
+            child: Image.memory(image, width: width),
           ),
         );
       }).toList(),

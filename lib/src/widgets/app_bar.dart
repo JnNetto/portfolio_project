@@ -27,7 +27,7 @@ class TitleAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: constraints.maxWidth > 480
+          left: constraints.maxWidth > 1050
               ? constraints.maxWidth * 0.15
               : constraints.maxWidth * 0.05),
       child: Text("JnNetto",
