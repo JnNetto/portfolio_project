@@ -11,7 +11,9 @@ import 'package:portfolio/src/widgets/contact.dart';
 import 'package:portfolio/src/widgets/projects.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final VoidCallback toggleTheme;
+
+  const Home({super.key, required this.toggleTheme});
 
   @override
   State<Home> createState() => _HomeState();
@@ -34,10 +36,11 @@ class _HomeState extends State<Home> {
       builder: (context, constraints) {
         return Scaffold(
           appBar: appBarCustom(
-            constraints,
-            _sectionScroller.buildAppBarButtons(constraints),
-            _sectionScroller.buildAppBarDrawer(context),
-          ),
+              constraints,
+              _sectionScroller.buildAppBarButtons(constraints, context),
+              _sectionScroller.buildAppBarDrawer(context),
+              widget.toggleTheme,
+              context),
           body: BodyContent(
             info: _info,
             constraints: constraints,
@@ -64,7 +67,7 @@ class BodyContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ColorsApp.background,
+      color: ColorsApp.background(context),
       child: FutureBuilder<Map<String, dynamic>>(
         future: info,
         builder: (context, snapshot) {
@@ -75,7 +78,8 @@ class BodyContent extends StatelessWidget {
               child: Text(
                 'Error: ${snapshot.error}',
                 style: GoogleFonts.aBeeZee(
-                  textStyle: TextStyle(fontSize: 50, color: ColorsApp.letters),
+                  textStyle: TextStyle(
+                      fontSize: 50, color: ColorsApp.letters(context)),
                 ),
               ),
             );
@@ -174,7 +178,7 @@ class Footer extends StatelessWidget {
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 20 : 12,
-              color: ColorsApp.letters,
+              color: ColorsApp.letters(context),
             ),
           ),
         ),

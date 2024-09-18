@@ -45,7 +45,7 @@ class InitialInfo extends StatelessWidget {
   }
 }
 
-class AnimationLottie extends StatelessWidget {
+class AnimationLottie extends StatefulWidget {
   final BoxConstraints constraints;
 
   const AnimationLottie({
@@ -54,13 +54,43 @@ class AnimationLottie extends StatelessWidget {
   });
 
   @override
+  State<AnimationLottie> createState() => _AnimationLottieState();
+}
+
+class _AnimationLottieState extends State<AnimationLottie>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        duration: const Duration(milliseconds: 2000), vsync: this);
+    _controller.repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Lottie.asset(
-      "assets/animations/cellphone.json",
-      width: constraints.maxWidth > 480 ? constraints.maxWidth * .35 : 0,
-      height: constraints.maxWidth > 480 ? constraints.maxHeight * .75 : 0,
-      fit: BoxFit.fill,
-    );
+        Theme.of(context).brightness == Brightness.dark
+            ? "assets/animations/cellphone.json"
+            : "assets/animations/cellphoneLight.json",
+        width: widget.constraints.maxWidth > 480
+            ? widget.constraints.maxWidth * .35
+            : 0,
+        height: widget.constraints.maxWidth > 480
+            ? widget.constraints.maxHeight * .75
+            : 0,
+        fit: BoxFit.fill,
+        controller: Theme.of(context).brightness == Brightness.light
+            ? _controller
+            : null,
+        repeat: true);
   }
 }
 
@@ -111,9 +141,9 @@ class SocialNetwork extends StatelessWidget {
         return IconButton(
           icon: Icon(
             item["icon"],
-            color: Colors.white,
+            color: ColorsApp.letters(context),
           ),
-          hoverColor: ColorsApp.hoverButton,
+          hoverColor: ColorsApp.hoverIcon(context),
           onPressed: () async {
             await launchUrl(Uri.parse(item["url"]));
           },
@@ -151,7 +181,7 @@ class Occupation extends StatelessWidget {
           data["occupation"] ?? "No description",
           textStyle: TextStyle(
             fontSize: constraints.maxWidth > 480 ? 30 : 25,
-            color: ColorsApp.letters,
+            color: ColorsApp.letters(context),
           ),
           speed: const Duration(milliseconds: 200),
         ),
@@ -180,7 +210,7 @@ class Name extends StatelessWidget {
       style: GoogleFonts.aBeeZee(
         textStyle: TextStyle(
           fontSize: constraints.maxWidth > 480 ? 50 : 35,
-          color: ColorsApp.letters,
+          color: ColorsApp.letters(context),
         ),
       ),
     );

@@ -39,8 +39,6 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
   @override
   void initState() {
     super.initState();
-
-    // Configuração dos itens para rolagem infinita
     _items = widget.enableInfiniteScroll
         ? [
             widget.items.last,
@@ -82,9 +80,13 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
         onPageChanged: (index) {
           if (widget.enableInfiniteScroll) {
             if (index == 0) {
-              _jumpToPage(_items.length - 2);
+              Future.delayed(const Duration(milliseconds: 300), () {
+                _jumpToPage(_items.length - 2);
+              });
             } else if (index == _items.length - 1) {
-              _jumpToPage(1);
+              Future.delayed(const Duration(milliseconds: 300), () {
+                _jumpToPage(1);
+              });
             }
           }
           setState(() {

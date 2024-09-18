@@ -54,7 +54,7 @@ class _HoverTextState extends State<HoverText> {
                 duration: const Duration(milliseconds: 300),
                 height: 2,
                 width: _isHovered ? _width : 0,
-                color: ColorsApp.color4,
+                color: ColorsApp.hoverButton(context),
               ),
             ],
           ),

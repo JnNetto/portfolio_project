@@ -53,7 +53,7 @@ class _AttributesState extends State<Attributes> {
 
   @override
   Widget build(BuildContext context) {
-    double maxHeightEffect = widget.constraints.maxWidth > 480 ? 300 : 250;
+    double maxHeightEffect = widget.constraints.maxWidth > 480 ? 300 : 400;
     double maxSizeCard = widget.constraints.maxWidth > 480 ? 180 : 100;
     return LayoutBuilder(builder: (context, constraints) {
       return Padding(
@@ -67,7 +67,7 @@ class _AttributesState extends State<Attributes> {
                     child: Text("Não há habilidades",
                         style: GoogleFonts.aBeeZee(
                             fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                            color: Colors.grey)),
+                            color: ColorsApp.letters(context))),
                   )
                 : _AttributesList(
                     constraints: widget.constraints,
@@ -203,6 +203,56 @@ class _AttributeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> buildStars(double level) {
+      int fullStars = level.floor();
+      bool hasHalfStar = (level - fullStars) >= 0.5;
+      int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+      List<Widget> stars = [];
+
+      for (int i = 0; i < fullStars; i++) {
+        stars.add(Icon(Icons.star, color: ColorsApp.stars(context)));
+      }
+
+      if (hasHalfStar) {
+        stars.add(Icon(Icons.star_half, color: ColorsApp.stars(context)));
+      }
+
+      for (int i = 0; i < emptyStars; i++) {
+        stars.add(Icon(Icons.star_border, color: ColorsApp.stars(context)));
+      }
+
+      return stars;
+    }
+
+    List<Widget> buildDescriptionPoints(String description) {
+      List<String> points = description.split('.');
+      points.removeWhere((point) => point.trim().isEmpty);
+      return points.map((point) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("• ",
+                  style: TextStyle(
+                      fontSize: constraints.maxWidth > 480
+                          ? 20
+                          : constraints.maxWidth * .05,
+                      color: ColorsApp.letters(context))),
+              Expanded(
+                  child: Text(point.trim(),
+                      style: TextStyle(
+                          fontSize: constraints.maxWidth > 480
+                              ? 20
+                              : constraints.maxWidth * .05,
+                          color: ColorsApp.letters(context)))),
+            ],
+          ),
+        );
+      }).toList();
+    }
+
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal: constraints.maxWidth > 480
@@ -211,44 +261,48 @@ class _AttributeCard extends StatelessWidget {
                   : 100
               : 50),
       child: LayoutBuilder(builder: (context, constraints) {
+        double level = attribute['level'] * 1.0;
         return Card(
           key: cardKey,
           elevation: 40,
-          color: ColorsApp.background,
+          color: ColorsApp.background(context),
           margin: const EdgeInsets.only(bottom: 20.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Image.memory(
-                  image,
-                  width: constraints.maxWidth > 480 ? 150 : 70,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Center(
-                      child: Text(attribute['title']!,
-                          style: TextStyle(
-                              fontSize: constraints.maxWidth > 480 ? 22 : 20,
-                              color: ColorsApp.letters)),
+                    Image.memory(
+                      image,
+                      width: constraints.maxWidth > 480 ? 150 : 70,
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(height: 5),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10, right: 10),
-                      child: Text(attribute['description']!,
-                          style: TextStyle(
-                              fontSize: constraints.maxWidth > 480 ? 16 : 14,
-                              color: ColorsApp.letters)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            attribute['title']!,
+                            style: TextStyle(
+                              fontSize: constraints.maxWidth > 480 ? 22 : 25,
+                              color: ColorsApp.letters(context),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: buildStars(level),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 15),
+                ...buildDescriptionPoints(attribute['description']!),
+              ],
+            ),
           ),
         );
       }),
@@ -278,9 +332,9 @@ class _ShowMoreButton extends StatelessWidget {
       child: Visibility(
         visible: !isExpanded,
         child: HoverButton(
-          text: const Text(
+          text: Text(
             "Exibir mais",
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: ColorsApp.letters(context)),
           ),
           onPressed: () {
             toggleExpansion();
@@ -330,9 +384,9 @@ class _ShowLessButton extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 100),
           child: HoverButton(
-            text: const Text(
+            text: Text(
               "Exibir menos",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: ColorsApp.letters(context)),
             ),
             onPressed: () {
               toggleExpansion();
@@ -377,7 +431,7 @@ class TitleAtributtes extends StatelessWidget {
                   fontSize: constraints.maxWidth > 480
                       ? 50
                       : constraints.maxWidth * .09,
-                  color: ColorsApp.letters))),
+                  color: ColorsApp.letters(context)))),
     );
   }
 }
@@ -418,16 +472,16 @@ class _GradientEffect extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  ColorsApp.background.withOpacity(0.09),
-                  ColorsApp.background.withOpacity(0.19),
-                  ColorsApp.background.withOpacity(0.29),
-                  ColorsApp.background.withOpacity(0.39),
-                  ColorsApp.background.withOpacity(0.49),
-                  ColorsApp.background.withOpacity(0.59),
-                  ColorsApp.background.withOpacity(0.69),
-                  ColorsApp.background.withOpacity(0.79),
-                  ColorsApp.background.withOpacity(0.89),
-                  ColorsApp.background.withOpacity(0.99),
+                  ColorsApp.background(context).withOpacity(0.09),
+                  ColorsApp.background(context).withOpacity(0.19),
+                  ColorsApp.background(context).withOpacity(0.29),
+                  ColorsApp.background(context).withOpacity(0.39),
+                  ColorsApp.background(context).withOpacity(0.49),
+                  ColorsApp.background(context).withOpacity(0.59),
+                  ColorsApp.background(context).withOpacity(0.69),
+                  ColorsApp.background(context).withOpacity(0.79),
+                  ColorsApp.background(context).withOpacity(0.89),
+                  ColorsApp.background(context).withOpacity(0.99),
                 ],
               ),
             ),

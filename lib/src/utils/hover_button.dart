@@ -42,7 +42,7 @@ class _HoverButtonState extends State<HoverButton> {
                   boxShadow: [
                     BoxShadow(
                       color: _isHovered
-                          ? ColorsApp.color4.withOpacity(0.2)
+                          ? ColorsApp.border(context).withOpacity(0.2)
                           : Colors.transparent,
                       spreadRadius: 2,
                       blurRadius: 4,
@@ -74,7 +74,8 @@ class _HoverButtonState extends State<HoverButton> {
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0.0),
-                        side: BorderSide(color: ColorsApp.color4, width: 2.0),
+                        side: BorderSide(
+                            color: ColorsApp.border(context), width: 2.0),
                       ),
                     ),
                     elevation: WidgetStateProperty.all<double>(0),

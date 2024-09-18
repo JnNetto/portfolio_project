@@ -31,34 +31,47 @@ class Projects extends StatelessWidget {
                       fontSize: constraints.maxWidth > 480
                           ? 50
                           : constraints.maxWidth * .09,
-                      color: ColorsApp.letters))),
+                      color: ColorsApp.letters(context)))),
         ),
         SliderProjects(
-            constraints: constraints,
-            projects: projects,
-            controller: controller),
+          constraints: constraints,
+          projects: projects,
+        ),
       ],
     );
   }
 }
 
-class SliderProjects extends StatelessWidget {
+class SliderProjects extends StatefulWidget {
   final BoxConstraints constraints;
   final List projects;
-  final CustomCarouselController controller;
 
-  const SliderProjects(
-      {super.key,
-      required this.constraints,
-      required this.projects,
-      required this.controller});
+  const SliderProjects({
+    super.key,
+    required this.constraints,
+    required this.projects,
+  });
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _SliderProjectsState createState() => _SliderProjectsState();
+}
+
+class _SliderProjectsState extends State<SliderProjects> {
+  late CustomCarouselController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = CustomCarouselController();
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> items = projects.map((projectMap) {
+    List<Widget> items = widget.projects.map((projectMap) {
       final project = Map<String, dynamic>.from(projectMap);
       return ProjectCardWidget(
-        constraints: constraints,
+        constraints: widget.constraints,
         project: project,
       );
     }).toList();
@@ -67,18 +80,18 @@ class SliderProjects extends StatelessWidget {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(
-              horizontal: constraints.maxWidth > 480
-                  ? constraints.maxWidth > 1050
+              horizontal: widget.constraints.maxWidth > 480
+                  ? widget.constraints.maxWidth > 1050
                       ? 250
                       : 100
                   : 0),
-          child: projects.isEmpty
+          child: widget.projects.isEmpty
               ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 30),
                   child: Text("Não há projetos",
                       style: GoogleFonts.aBeeZee(
-                          fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                          color: Colors.grey)),
+                          fontSize: widget.constraints.maxWidth > 480 ? 18 : 16,
+                          color: ColorsApp.letters(context))),
                 )
               : CustomCarouselSlider(
                   items: items,
@@ -86,41 +99,42 @@ class SliderProjects extends StatelessWidget {
                   enlargeCenterPage: true,
                   autoPlay: false,
                   autoPlayAnimationDuration: const Duration(milliseconds: 600),
-                  autoPlayCurve: Curves.easeIn,
-                  viewportFraction: constraints.maxWidth > 480 ? 0.65 : 0.75,
-                  controller: controller,
+                  autoPlayCurve: Curves.fastEaseInToSlowEaseOut,
+                  viewportFraction:
+                      widget.constraints.maxWidth > 480 ? 0.65 : 0.75,
+                  controller: _controller, // Use the local controller
                 ),
         ),
         GradientEffectWidget(
-            constraints: constraints,
+            constraints: widget.constraints,
             align: Alignment.centerLeft,
             begin: Alignment.centerRight,
             end: Alignment.centerLeft),
         GradientEffectWidget(
-            constraints: constraints,
+            constraints: widget.constraints,
             align: Alignment.centerRight,
             begin: Alignment.centerLeft,
             end: Alignment.centerRight),
         Positioned(
-          left: constraints.maxWidth > 480 ? 100 : 10,
+          left: widget.constraints.maxWidth > 480 ? 100 : 10,
           top: 175,
           child: IconButton(
-            hoverColor: ColorsApp.hoverButton,
-            icon: Icon(Icons.arrow_back,
-                size: constraints.maxWidth > 480 ? 40 : 25,
-                color: Colors.white70),
-            onPressed: () => controller.previousPage(),
+            hoverColor: ColorsApp.hoverIcon(context),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+                size: widget.constraints.maxWidth > 480 ? 40 : 25,
+                color: ColorsApp.letters(context)),
+            onPressed: () => _controller.previousPage(),
           ),
         ),
         Positioned(
-          right: constraints.maxWidth > 480 ? 100 : 10,
+          right: widget.constraints.maxWidth > 480 ? 100 : 10,
           top: 175,
           child: IconButton(
-            hoverColor: ColorsApp.hoverButton,
-            icon: Icon(Icons.arrow_forward_outlined,
-                size: constraints.maxWidth > 480 ? 40 : 25,
-                color: Colors.white70),
-            onPressed: () => controller.nextPage(),
+            hoverColor: ColorsApp.hoverIcon(context),
+            icon: Icon(Icons.arrow_forward_ios_rounded,
+                size: widget.constraints.maxWidth > 480 ? 40 : 25,
+                color: ColorsApp.letters(context)),
+            onPressed: () => _controller.nextPage(),
           ),
         ),
       ],
@@ -161,16 +175,16 @@ class GradientEffectWidget extends StatelessWidget {
                 end: end,
                 colors: [
                   Colors.transparent,
-                  ColorsApp.background.withOpacity(0.09),
-                  ColorsApp.background.withOpacity(0.19),
-                  ColorsApp.background.withOpacity(0.29),
-                  ColorsApp.background.withOpacity(0.39),
-                  ColorsApp.background.withOpacity(0.49),
-                  ColorsApp.background.withOpacity(0.59),
-                  ColorsApp.background.withOpacity(0.69),
-                  ColorsApp.background.withOpacity(0.79),
-                  ColorsApp.background.withOpacity(0.89),
-                  ColorsApp.background.withOpacity(0.99),
+                  ColorsApp.background(context).withOpacity(0.09),
+                  ColorsApp.background(context).withOpacity(0.19),
+                  ColorsApp.background(context).withOpacity(0.29),
+                  ColorsApp.background(context).withOpacity(0.39),
+                  ColorsApp.background(context).withOpacity(0.49),
+                  ColorsApp.background(context).withOpacity(0.59),
+                  ColorsApp.background(context).withOpacity(0.69),
+                  ColorsApp.background(context).withOpacity(0.79),
+                  ColorsApp.background(context).withOpacity(0.89),
+                  ColorsApp.background(context).withOpacity(0.99),
                 ],
               ),
             ),
@@ -196,20 +210,12 @@ class ProjectCardWidget extends StatelessWidget {
           maxWidth: constraints.maxWidth > 480 ? 500 : 250),
       child: Container(
         decoration: BoxDecoration(
-          color: ColorsApp.card,
+          color: ColorsApp.card(context),
           borderRadius: BorderRadius.circular(10.0),
           border: Border.all(
-            color: ColorsApp.shadowColor,
+            color: ColorsApp.border(context),
             width: constraints.maxWidth > 480 ? 6 : 4,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: ColorsApp.shadowColor,
-              blurRadius: 10,
-              spreadRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
         ),
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: Padding(
@@ -236,7 +242,7 @@ class ProjectCardWidget extends StatelessWidget {
                         child: Text(
                           project["state"],
                           style: GoogleFonts.aBeeZee(
-                              fontSize: 22, color: Colors.grey),
+                              fontSize: 16, color: ColorsApp.letters(context)),
                         ),
                       ),
                     ),
@@ -245,13 +251,12 @@ class ProjectCardWidget extends StatelessWidget {
               ),
               Visibility(
                 visible: constraints.maxWidth > 480,
-                child: Positioned(
-                  bottom: 10,
-                  left: 10,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
                   child: Text(
                     project["state"],
-                    style:
-                        GoogleFonts.aBeeZee(fontSize: 22, color: Colors.grey),
+                    style: GoogleFonts.aBeeZee(
+                        fontSize: 25, color: ColorsApp.letters(context)),
                   ),
                 ),
               ),
@@ -281,7 +286,7 @@ class TextsWidget extends StatelessWidget {
               fontSize:
                   constraints.maxWidth > 480 ? 30 : constraints.maxWidth * .07,
               fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
+              color: ColorsApp.letters(context)),
         ),
         SizedBox(
           height: constraints.maxWidth > 480 ? 15 : 10,
@@ -290,10 +295,11 @@ class TextsWidget extends StatelessWidget {
           project["description"],
           textAlign: TextAlign.center,
           style: GoogleFonts.aBeeZee(
-              fontSize:
-                  constraints.maxWidth > 480 ? 20 : constraints.maxWidth * .035,
+              fontSize: constraints.maxWidth > 480
+                  ? 20
+                  : constraints.maxWidth * .0385,
               fontWeight: FontWeight.bold,
-              color: ColorsApp.letters),
+              color: ColorsApp.letters(context)),
         ),
       ],
     );
@@ -321,7 +327,7 @@ class ButtonsToSeeWidget extends StatelessWidget {
             DetailsWidget.details(context,
                 constraints: constraints, project: project);
           },
-          lettersColor: ColorsApp.letterButton,
+          lettersColor: ColorsApp.letterButton(context),
           fontSize: constraints.maxWidth > 480
               ? constraints.maxWidth > 1050
                   ? 20
@@ -350,7 +356,7 @@ class RepositoryLinkWidget extends StatelessWidget {
           await launchUrl(url, mode: LaunchMode.externalApplication);
         }
       },
-      lettersColor: ColorsApp.letterButton,
+      lettersColor: ColorsApp.letterButton(context),
       fontSize: constraints.maxWidth > 480
           ? constraints.maxWidth > 1050
               ? 20
@@ -388,7 +394,7 @@ class DeployedApplicationWidget extends StatelessWidget {
           );
         }
       },
-      lettersColor: ColorsApp.letterButton,
+      lettersColor: ColorsApp.letterButton(context),
       fontSize: constraints.maxWidth > 480
           ? constraints.maxWidth > 1050
               ? 20
@@ -405,7 +411,7 @@ class CustomDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: ColorsApp.backgroundDetails,
+      backgroundColor: ColorsApp.backgroundDetails(context),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -419,7 +425,7 @@ class CustomDialog extends StatelessWidget {
             'Estamos trabalhando nisso',
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters),
+                color: ColorsApp.letters(context)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -435,7 +441,7 @@ class CustomDialog extends StatelessWidget {
               'Fechar',
               style: GoogleFonts.aBeeZee(
                   fontSize: constraints.maxWidth > 480 ? 15 : 13,
-                  color: ColorsApp.letters),
+                  color: ColorsApp.letters(context)),
             ),
           ),
         ),
@@ -470,18 +476,20 @@ class DetailsDialog extends StatelessWidget {
     List<String> funcionalidades =
         List<String>.from(project["functionalities"]);
     String plataforma = project["platform"];
+    String orientacao = project["orientation"];
+
     String minhaFuncao = project["myFunction"];
     List<String> tecnologias = List<String>.from(project["technologiesUsed"]);
 
     return Stack(
       children: [
         AlertDialog(
-          backgroundColor: ColorsApp.backgroundDetails,
+          backgroundColor: ColorsApp.backgroundDetails(context),
           title: Center(
             child: Text("Detalhes",
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 32 : 26,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
           ),
           content: SingleChildScrollView(
             child: Column(
@@ -490,13 +498,13 @@ class DetailsDialog extends StatelessWidget {
                 if (constraints.maxWidth > 480)
                   WebDetails(
                       constraints: constraints,
-                      technologiesUsed: technologiesUsed(tecnologias),
+                      technologiesUsed: technologiesUsed(tecnologias, context),
                       plataforma: plataforma,
                       minhaFuncao: minhaFuncao),
                 if (constraints.maxWidth <= 480)
                   MobileDetails(
                       constraints: constraints,
-                      technologiesUsed: technologiesUsed(tecnologias),
+                      technologiesUsed: technologiesUsed(tecnologias, context),
                       plataforma: plataforma,
                       minhaFuncao: minhaFuncao),
                 SizedBox(height: constraints.maxWidth > 480 ? 30 : 20),
@@ -505,7 +513,7 @@ class DetailsDialog extends StatelessWidget {
                         fontSize: constraints.maxWidth > 480
                             ? 24
                             : constraints.maxWidth * .05,
-                        color: ColorsApp.letters)),
+                        color: ColorsApp.letters(context))),
                 Funtionalities(funcionalidades: funcionalidades),
                 const SizedBox(
                   height: 30,
@@ -513,7 +521,7 @@ class DetailsDialog extends StatelessWidget {
                 Text("Imagens do projeto",
                     style: GoogleFonts.aBeeZee(
                         fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                        color: ColorsApp.letters)),
+                        color: ColorsApp.letters(context))),
                 FutureBuilder<List<Uint8List>>(
                   future: controller.fetchImages(project["name"]),
                   builder: (context, snapshot) {
@@ -537,12 +545,12 @@ class DetailsDialog extends StatelessWidget {
                         child: Text("Nenhuma imagem disponível",
                             style: GoogleFonts.aBeeZee(
                                 fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                                color: Colors.grey)),
+                                color: ColorsApp.letters(context))),
                       );
                     } else {
                       return Images(
                         images: snapshot.data!,
-                        plataforma: plataforma,
+                        orientacao: orientacao,
                         context: context,
                         constraints: constraints,
                       );
@@ -558,7 +566,7 @@ class DetailsDialog extends StatelessWidget {
     );
   }
 
-  Widget technologiesUsed(List<String> tecnologias) {
+  Widget technologiesUsed(List<String> tecnologias, BuildContext context) {
     Color getRandomColor() {
       Random random = Random();
       Color color;
@@ -595,8 +603,8 @@ class DetailsDialog extends StatelessWidget {
               color: bgColor, borderRadius: BorderRadius.circular(8)),
           child: Text(
             tech,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: ColorsApp.letters(context),
             ),
           ),
         );
@@ -626,12 +634,12 @@ class MobileDetails extends StatelessWidget {
             textAlign: TextAlign.left,
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters)),
+                color: ColorsApp.letters(context))),
         Text(plataforma,
             textAlign: TextAlign.left,
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters)),
+                color: ColorsApp.letters(context))),
         const SizedBox(
           height: 20,
         ),
@@ -639,12 +647,12 @@ class MobileDetails extends StatelessWidget {
             textAlign: TextAlign.left,
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters)),
+                color: ColorsApp.letters(context))),
         Text(minhaFuncao,
             textAlign: TextAlign.left,
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters)),
+                color: ColorsApp.letters(context))),
         const SizedBox(
           height: 20,
         ),
@@ -652,7 +660,7 @@ class MobileDetails extends StatelessWidget {
             textAlign: TextAlign.left,
             style: GoogleFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                color: ColorsApp.letters)),
+                color: ColorsApp.letters(context))),
         technologiesUsed,
       ],
     );
@@ -683,12 +691,12 @@ class WebDetails extends StatelessWidget {
                 textAlign: TextAlign.left,
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
             Text(plataforma,
                 textAlign: TextAlign.left,
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
           ],
         ),
         const SizedBox(
@@ -700,12 +708,12 @@ class WebDetails extends StatelessWidget {
                 textAlign: TextAlign.left,
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
             Text(minhaFuncao,
                 textAlign: TextAlign.left,
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
           ],
         ),
         const SizedBox(
@@ -717,7 +725,7 @@ class WebDetails extends StatelessWidget {
                 textAlign: TextAlign.left,
                 style: GoogleFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                    color: ColorsApp.letters)),
+                    color: ColorsApp.letters(context))),
             technologiesUsed,
           ],
         ),
@@ -729,14 +737,14 @@ class WebDetails extends StatelessWidget {
 class Images extends StatelessWidget {
   final BoxConstraints constraints;
   final List<Uint8List> images;
-  final String plataforma;
+  final String orientacao;
   final BuildContext context;
 
   const Images(
       {super.key,
       required this.constraints,
       required this.images,
-      required this.plataforma,
+      required this.orientacao,
       required this.context});
 
   @override
@@ -768,7 +776,7 @@ class Images extends StatelessWidget {
 
     int halfLength = images.length <= 3 ? 3 : (images.length / 2).ceil();
     late double? width;
-    if (plataforma == "Mobile") {
+    if (orientacao == "vertical") {
       if (constraints.maxWidth > 480) {
         width = 150;
       } else {
@@ -826,10 +834,11 @@ class Funtionalities extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: funcionalidades.map((funcionalidade) {
         return ListTile(
-          leading: Icon(Icons.check, color: ColorsApp.letters),
+          leading: Icon(Icons.check, color: ColorsApp.letters(context)),
           title: Text(
             funcionalidade,
-            style: GoogleFonts.aBeeZee(fontSize: 16, color: ColorsApp.letters),
+            style: GoogleFonts.aBeeZee(
+                fontSize: 16, color: ColorsApp.letters(context)),
           ),
         );
       }).toList(),
@@ -849,21 +858,22 @@ class ArrowBackButton extends StatelessWidget {
       left: 16,
       child: IconButton(
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(ColorsApp.card),
+          backgroundColor:
+              WidgetStateProperty.all(ColorsApp.backgroundDetails(context)),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          shadowColor: WidgetStateProperty.all(ColorsApp.shadowColor),
+          shadowColor: WidgetStateProperty.all(ColorsApp.shadowColor(context)),
           elevation: WidgetStateProperty.all(10),
         ),
         onPressed: () {
           Navigator.pop(context);
         },
-        icon: const Icon(
+        icon: Icon(
           EvaIcons.arrowBackOutline,
-          color: Colors.white,
+          color: ColorsApp.letters(context),
         ),
       ),
     );

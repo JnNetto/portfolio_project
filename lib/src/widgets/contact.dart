@@ -29,7 +29,7 @@ class Contact extends StatelessWidget {
             style: GoogleFonts.aBeeZee(
               textStyle: TextStyle(
                 fontSize: isLargeScreen ? 50 : constraints.maxWidth * .09,
-                color: ColorsApp.letters,
+                color: ColorsApp.letters(context),
               ),
             ),
           ),
@@ -78,7 +78,7 @@ class EmailInfo extends StatelessWidget {
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 30 : 20,
-              color: ColorsApp.letters,
+              color: ColorsApp.letters(context),
             ),
           ),
         ),
@@ -87,7 +87,7 @@ class EmailInfo extends StatelessWidget {
           style: GoogleFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 18 : 14,
-              color: ColorsApp.letters,
+              color: ColorsApp.letters(context),
             ),
           ),
         ),
@@ -125,17 +125,17 @@ class _EmailFormState extends State<EmailForm> {
 
   InputDecoration _inputDecoration(String label, bool hasError) {
     return InputDecoration(
-      hintStyle: TextStyle(color: ColorsApp.letters),
+      hintStyle: TextStyle(color: ColorsApp.letters(context)),
       labelText: hasError ? null : label,
       labelStyle: TextStyle(
-        color: ColorsApp.letters,
+        color: ColorsApp.letters(context),
         fontSize: widget.constraints.maxWidth > 480 ? 16 : 11,
       ),
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
+        borderSide: BorderSide(color: ColorsApp.border(context), width: 2.0),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: ColorsApp.color4, width: 2.0),
+        borderSide: BorderSide(color: ColorsApp.border(context), width: 2.0),
       ),
       errorStyle: TextStyle(
         fontSize: widget.constraints.maxWidth > 480 ? 12 : 10,
@@ -261,7 +261,8 @@ class _EmailFormState extends State<EmailForm> {
               shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0.0),
-                  side: BorderSide(color: ColorsApp.color4, width: 2.0),
+                  side:
+                      BorderSide(color: ColorsApp.border(context), width: 2.0),
                 ),
               ),
               elevation: WidgetStateProperty.all<double>(0),
@@ -269,7 +270,7 @@ class _EmailFormState extends State<EmailForm> {
             onPressed: _validateForm,
             child: Text(
               'Enviar mensagem',
-              style: TextStyle(color: ColorsApp.letters),
+              style: TextStyle(color: ColorsApp.letters(context)),
             ),
           ),
         ],
@@ -293,7 +294,7 @@ class _EmailFormState extends State<EmailForm> {
       width: widget.constraints.maxWidth > 480 ? 600 : 300,
       child: TextFormField(
         style: TextStyle(
-          color: ColorsApp.letters,
+          color: ColorsApp.letters(context),
           fontSize: widget.constraints.maxWidth > 480 ? 13 : 11,
         ),
         controller: controller,

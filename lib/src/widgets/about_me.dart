@@ -31,7 +31,7 @@ class AboutMe extends StatelessWidget {
                       fontSize: constraints.maxWidth > 480
                           ? 50
                           : constraints.maxWidth * .09,
-                      color: ColorsApp.letters))),
+                      color: ColorsApp.letters(context)))),
           Visibility(
               visible: constraints.maxWidth <= 480,
               child: const SizedBox(
@@ -107,14 +107,14 @@ class TextAboutMe extends StatelessWidget {
     TextStyle defaultStyle = GoogleFonts.aBeeZee(
       textStyle: TextStyle(
         fontSize: constraints.maxWidth > 480 ? 20 : 20,
-        color: ColorsApp.letters,
+        color: ColorsApp.letters(context),
       ),
     );
 
     TextStyle highlightedStyle = GoogleFonts.aBeeZee(
       textStyle: TextStyle(
         fontSize: constraints.maxWidth > 480 ? 20 : 20,
-        color: ColorsApp.letterButton,
+        color: ColorsApp.letterButton(context),
         fontWeight: FontWeight.bold,
       ),
     );
