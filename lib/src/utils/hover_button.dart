@@ -18,8 +18,7 @@ class HoverButton extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
-  _HoverButtonState createState() => _HoverButtonState();
+  State<HoverButton> createState() => _HoverButtonState();
 }
 
 class _HoverButtonState extends State<HoverButton> {
@@ -27,71 +26,54 @@ class _HoverButtonState extends State<HoverButton> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return MouseRegion(
-          onEnter: (_) => _onHover(true),
-          onExit: (_) => _onHover(false),
-          child: Stack(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _isHovered
-                          ? ColorsApp.border(context).withOpacity(0.2)
-                          : Colors.transparent,
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                width: _isHovered
-                    ? (constraints.maxWidth > 480
-                        ? widget.widthWeb + 6
-                        : widget.widthMobile + 6)
-                    : (constraints.maxWidth > 480
-                        ? widget.widthWeb
-                        : widget.widthMobile),
-                height: _isHovered
-                    ? (constraints.maxWidth > 480 ? 40 : 23)
-                    : (constraints.maxWidth > 480 ? 35 : 30),
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    fixedSize: WidgetStateProperty.all<Size>(Size(
-                      constraints.maxWidth > 480
-                          ? widget.widthWeb
-                          : widget.widthMobile,
-                      constraints.maxWidth > 480 ? 35 : 30,
-                    )),
-                    backgroundColor:
-                        WidgetStateProperty.all<Color>(Colors.transparent),
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(0.0),
-                        side: BorderSide(
-                            color: ColorsApp.border(context), width: 2.0),
-                      ),
-                    ),
-                    elevation: WidgetStateProperty.all<double>(0),
-                  ),
-                  onPressed: widget.onPressed,
-                  child: widget.text,
-                ),
+    final isWide = widget.constraints.maxWidth > 480;
+    final width = isWide ? widget.widthWeb : widget.widthMobile;
+    final height = isWide ? 35.0 : 30.0;
+
+    return MouseRegion(
+      onEnter: (_) => _onHover(true),
+      onExit: (_) => _onHover(false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: _isHovered
+                  ? ColorsApp.border(context).withValues(alpha: 0.2)
+                  : Colors.transparent,
+              spreadRadius: 2,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        width: _isHovered ? width + 6 : width,
+        height: _isHovered ? height + 5 : height,
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            fixedSize: WidgetStateProperty.all<Size>(Size(width, height)),
+            backgroundColor:
+                WidgetStateProperty.all<Color>(Colors.transparent),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0.0),
+                side: BorderSide(color: ColorsApp.border(context), width: 2.0),
               ),
-            ],
+            ),
+            elevation: WidgetStateProperty.all<double>(0),
           ),
-        );
-      },
+          onPressed: widget.onPressed,
+          child: widget.text,
+        ),
+      ),
     );
   }
 
   void _onHover(bool isHovered) {
+    if (_isHovered == isHovered) return;
     setState(() {
       _isHovered = isHovered;
     });

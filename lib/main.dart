@@ -34,8 +34,14 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Portifólio | JnNetto',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        fontFamily: 'ABeeZee',
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: 'ABeeZee',
+      ),
       themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
       home: Home(
         toggleTheme: toggleTheme,

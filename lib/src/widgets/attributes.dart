@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
+import 'package:portfolio/src/utils/app_images.dart';
 import 'package:portfolio/src/utils/hover_button.dart';
 import '../utils/colors.dart';
 
@@ -26,15 +27,49 @@ class _AttributesState extends State<Attributes> {
   double totalHeightCards = 0;
   List<Uint8List> _decodedImages = [];
   List<GlobalKey> _cardKeys = [];
+  bool _imagesReady = false;
 
   @override
   void initState() {
     super.initState();
-    _decodedImages = List<Map>.from(widget.data["attributes"])
-        .map((attribute) => attribute["image"] as Uint8List)
-        .toList();
-    _cardKeys =
-        List.generate(widget.data["attributes"].length, (index) => GlobalKey());
+    final attributes = List<Map>.from(widget.data["attributes"] ?? []);
+    _cardKeys = List.generate(attributes.length, (index) => GlobalKey());
+    _loadImages(attributes);
+  }
+
+  Future<void> _loadImages(List<Map> attributes) async {
+    if (attributes.isEmpty) {
+      if (mounted) {
+        setState(() => _imagesReady = true);
+      }
+      return;
+    }
+
+    try {
+      final first = attributes.first["image"];
+      List<Uint8List> decoded;
+      if (first is Uint8List) {
+        decoded = attributes
+            .map((attribute) => attribute["image"] as Uint8List)
+            .toList();
+      } else {
+        decoded = await decodeBase64Images(
+          attributes.map((attribute) => attribute["image"] as String).toList(),
+        );
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _decodedImages = decoded;
+        _imagesReady = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _decodedImages = [];
+        _imagesReady = true;
+      });
+    }
   }
 
   void _calculateTotalHeight() {
@@ -53,39 +88,48 @@ class _AttributesState extends State<Attributes> {
 
   @override
   Widget build(BuildContext context) {
-    double maxHeightEffect = widget.constraints.maxWidth > 480 ? 300 : 400;
-    double maxSizeCard = widget.constraints.maxWidth > 480 ? 180 : 100;
-    return LayoutBuilder(builder: (context, constraints) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 40),
-        child: Column(
-          children: [
-            TitleAtributtes(constraints: widget.constraints),
-            widget.data.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30),
-                    child: Text("Não há habilidades",
-                        style: GoogleFonts.aBeeZee(
-                            fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                            color: ColorsApp.letters(context))),
-                  )
-                : _AttributesList(
-                    constraints: widget.constraints,
-                    data: widget.data,
-                    isExpanded: _isExpanded,
-                    maxHeightEffect: maxHeightEffect,
-                    maxSizeCard: maxSizeCard,
-                    cardKeys: _cardKeys,
-                    decodedImages: _decodedImages,
-                    calculateTotalHeight: _calculateTotalHeight,
-                    toggleExpansion: _toggleExpansion,
-                    totalHeightCards: totalHeightCards,
-                    attributeKey: widget.attributeKey,
-                  ),
-          ],
-        ),
-      );
-    });
+    final attributes = widget.data["attributes"];
+    final hasAttributes = attributes is List && attributes.isNotEmpty;
+    final maxHeightEffect = widget.constraints.maxWidth > 480 ? 300.0 : 400.0;
+    final maxSizeCard = widget.constraints.maxWidth > 480 ? 180.0 : 100.0;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: Column(
+        children: [
+          TitleAtributtes(constraints: widget.constraints),
+          if (!_imagesReady)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 30),
+              child: CircularProgressIndicator(),
+            )
+          else if (!hasAttributes)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              child: Text(
+                "Não há habilidades",
+                style: AppFonts.aBeeZee(
+                    fontSize: widget.constraints.maxWidth > 480 ? 18 : 16,
+                    color: ColorsApp.letters(context)),
+              ),
+            )
+          else
+            _AttributesList(
+              constraints: widget.constraints,
+              data: widget.data,
+              isExpanded: _isExpanded,
+              maxHeightEffect: maxHeightEffect,
+              maxSizeCard: maxSizeCard,
+              cardKeys: _cardKeys,
+              decodedImages: _decodedImages,
+              calculateTotalHeight: _calculateTotalHeight,
+              toggleExpansion: _toggleExpansion,
+              totalHeightCards: totalHeightCards,
+              attributeKey: widget.attributeKey,
+            ),
+        ],
+      ),
+    );
   }
 
   void _toggleExpansion() {
@@ -253,6 +297,8 @@ class _AttributeCard extends StatelessWidget {
       }).toList();
     }
 
+    final level = attribute['level'] * 1.0;
+
     return Padding(
       padding: EdgeInsets.symmetric(
           horizontal: constraints.maxWidth > 480
@@ -260,52 +306,48 @@ class _AttributeCard extends StatelessWidget {
                   ? 200
                   : 100
               : 50),
-      child: LayoutBuilder(builder: (context, constraints) {
-        double level = attribute['level'] * 1.0;
-        return Card(
-          key: cardKey,
-          elevation: 40,
-          color: ColorsApp.background(context),
-          margin: const EdgeInsets.only(bottom: 20.0),
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Image.memory(
-                      image,
-                      width: constraints.maxWidth > 480 ? 150 : 70,
-                      fit: BoxFit.cover,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            attribute['title']!,
-                            style: TextStyle(
-                              fontSize: constraints.maxWidth > 480 ? 22 : 25,
-                              color: ColorsApp.letters(context),
-                            ),
+      child: Card(
+        key: cardKey,
+        elevation: 40,
+        color: ColorsApp.background(context),
+        margin: const EdgeInsets.only(bottom: 20.0),
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  AppMemoryImage(
+                    bytes: image,
+                    width: constraints.maxWidth > 480 ? 150 : 70,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          attribute['title']!,
+                          style: TextStyle(
+                            fontSize: constraints.maxWidth > 480 ? 22 : 25,
+                            color: ColorsApp.letters(context),
                           ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: buildStars(level),
-                          ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: buildStars(level),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                ...buildDescriptionPoints(attribute['description']!),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              ...buildDescriptionPoints(attribute['description']!),
+            ],
           ),
-        );
-      }),
+        ),
+      ),
     );
   }
 }
@@ -426,7 +468,7 @@ class TitleAtributtes extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: constraints.maxWidth > 480 ? 60 : 40),
       child: Text("|| Habilidades ||",
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
               textStyle: TextStyle(
                   fontSize: constraints.maxWidth > 480
                       ? 50
@@ -472,16 +514,16 @@ class _GradientEffect extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 colors: [
                   Colors.transparent,
-                  ColorsApp.background(context).withOpacity(0.09),
-                  ColorsApp.background(context).withOpacity(0.19),
-                  ColorsApp.background(context).withOpacity(0.29),
-                  ColorsApp.background(context).withOpacity(0.39),
-                  ColorsApp.background(context).withOpacity(0.49),
-                  ColorsApp.background(context).withOpacity(0.59),
-                  ColorsApp.background(context).withOpacity(0.69),
-                  ColorsApp.background(context).withOpacity(0.79),
-                  ColorsApp.background(context).withOpacity(0.89),
-                  ColorsApp.background(context).withOpacity(0.99),
+                  ColorsApp.background(context).withValues(alpha:0.09),
+                  ColorsApp.background(context).withValues(alpha:0.19),
+                  ColorsApp.background(context).withValues(alpha:0.29),
+                  ColorsApp.background(context).withValues(alpha:0.39),
+                  ColorsApp.background(context).withValues(alpha:0.49),
+                  ColorsApp.background(context).withValues(alpha:0.59),
+                  ColorsApp.background(context).withValues(alpha:0.69),
+                  ColorsApp.background(context).withValues(alpha:0.79),
+                  ColorsApp.background(context).withValues(alpha:0.89),
+                  ColorsApp.background(context).withValues(alpha:0.99),
                 ],
               ),
             ),

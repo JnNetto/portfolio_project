@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
+import 'package:portfolio/src/utils/app_lottie.dart';
 import '../utils/colors.dart';
 
 class AboutMe extends StatelessWidget {
@@ -26,17 +26,16 @@ class AboutMe extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text("|| Sobre mim ||",
-              style: GoogleFonts.aBeeZee(
+              style: AppFonts.aBeeZee(
                   textStyle: TextStyle(
                       fontSize: constraints.maxWidth > 480
                           ? 50
                           : constraints.maxWidth * .09,
                       color: ColorsApp.letters(context)))),
-          Visibility(
-              visible: constraints.maxWidth <= 480,
-              child: const SizedBox(
-                height: 40,
-              )),
+          if (constraints.maxWidth <= 480)
+            const SizedBox(
+              height: 40,
+            ),
           InfoAboutMe(constraints: constraints, data: data),
         ],
       ),
@@ -65,7 +64,8 @@ class InfoAboutMe extends StatelessWidget {
         SizedBox(
           height: constraints.maxWidth > 480 ? 100 : 0,
         ),
-        AnimationLottie(constraints: constraints),
+        if (constraints.maxWidth > 480)
+          AnimationLottie(constraints: constraints),
       ],
     );
   }
@@ -83,9 +83,10 @@ class AnimationLottie extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 1, bottom: 10),
-      child: Lottie.asset("assets/animations/computer.json",
-          width: constraints.maxWidth > 480 ? constraints.maxWidth * .35 : 0,
-          fit: BoxFit.fill),
+      child: AppLottie(
+        asset: "assets/animations/computer.json",
+        width: constraints.maxWidth * .35,
+      ),
     );
   }
 }
@@ -104,16 +105,16 @@ class TextAboutMe extends StatelessWidget {
   Widget build(BuildContext context) {
     String aboutText = data["about"] ?? "No description";
 
-    TextStyle defaultStyle = GoogleFonts.aBeeZee(
+    TextStyle defaultStyle = AppFonts.aBeeZee(
       textStyle: TextStyle(
-        fontSize: constraints.maxWidth > 480 ? 20 : 20,
+        fontSize: 20,
         color: ColorsApp.letters(context),
       ),
     );
 
-    TextStyle highlightedStyle = GoogleFonts.aBeeZee(
+    TextStyle highlightedStyle = AppFonts.aBeeZee(
       textStyle: TextStyle(
-        fontSize: constraints.maxWidth > 480 ? 20 : 20,
+        fontSize: 20,
         color: ColorsApp.letterButton(context),
         fontWeight: FontWeight.bold,
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/colors.dart';
@@ -12,7 +12,6 @@ class Contact extends StatelessWidget {
     super.key,
     required this.constraints,
     required this.data,
-    required BuildContext context,
   });
 
   @override
@@ -26,7 +25,7 @@ class Contact extends StatelessWidget {
         children: [
           Text(
             "|| Contato ||",
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
               textStyle: TextStyle(
                 fontSize: isLargeScreen ? 50 : constraints.maxWidth * .09,
                 color: ColorsApp.letters(context),
@@ -75,7 +74,7 @@ class EmailInfo extends StatelessWidget {
       children: [
         Text(
           "Email para contato:",
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 30 : 20,
               color: ColorsApp.letters(context),
@@ -84,7 +83,7 @@ class EmailInfo extends StatelessWidget {
         ),
         Text(
           data["contact"] ?? "No contact info",
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 18 : 14,
               color: ColorsApp.letters(context),
@@ -122,6 +121,15 @@ class _EmailFormState extends State<EmailForm> {
   bool _subjectHasError = false;
   bool _emailTextHasError = false;
   bool _nameHasError = false;
+
+  @override
+  void dispose() {
+    _senderEmailController.dispose();
+    _subjectController.dispose();
+    _emailTextController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
 
   InputDecoration _inputDecoration(String label, bool hasError) {
     return InputDecoration(
@@ -176,8 +184,7 @@ class _EmailFormState extends State<EmailForm> {
     final String mailtoUrl =
         'mailto:$emailContact?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent('$emailText\n\nFrom: $name')}';
 
-    // ignore: deprecated_member_use
-    if (await canLaunch(mailtoUrl)) {
+    if (await canLaunchUrl(Uri.parse(mailtoUrl))) {
       await launchUrl(Uri.parse(mailtoUrl));
     } else {
       showDialog(

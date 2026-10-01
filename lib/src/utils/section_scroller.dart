@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
 import 'package:portfolio/src/utils/colors.dart';
 import 'package:portfolio/src/utils/hover_text.dart';
 
 class SectionScroller {
-  final ScrollController scrollController = ScrollController();
-
   final GlobalKey initialInfoKey = GlobalKey();
   final GlobalKey aboutMeKey = GlobalKey();
   final GlobalKey projectsKey = GlobalKey();
@@ -71,7 +69,7 @@ class SectionScroller {
           color: Colors.white,
         ),
         popUpAnimationStyle:
-            AnimationStyle(curve: Curves.fastEaseInToSlowEaseOut),
+            const AnimationStyle(curve: Curves.fastEaseInToSlowEaseOut),
         onSelected: (String key) {
           switch (key) {
             case 'initialInfoKey':
@@ -118,7 +116,7 @@ class SectionScroller {
   }
 
   TextStyle stylePopup(BuildContext context) {
-    return GoogleFonts.aBeeZee(
+    return AppFonts.aBeeZee(
         textStyle: TextStyle(color: ColorsApp.letters(context), fontSize: 20));
   }
 }

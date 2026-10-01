@@ -49,3 +49,5 @@ lib/firebase_options.dart
 ios/Runner/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 firebase.json
+.agents
+skills-lock.json

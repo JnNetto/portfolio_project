@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
 import 'package:portfolio/src/utils/colors.dart';
 import 'package:portfolio/src/widgets/app_bar.dart';
 import 'package:portfolio/src/widgets/initial_info.dart';
@@ -77,7 +77,7 @@ class BodyContent extends StatelessWidget {
             return Center(
               child: Text(
                 'Error: ${snapshot.error}',
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                   textStyle: TextStyle(
                       fontSize: 50, color: ColorsApp.letters(context)),
                 ),
@@ -117,22 +117,22 @@ class ContentSections extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Section(
+            KeyedSubtree(
               key: sectionScroller.initialInfoKey,
               child: InitialInfo(constraints: constraints, data: data),
             ),
             SizedBox(height: constraints.maxWidth > 480 ? 40 : 90),
-            Section(
+            KeyedSubtree(
               key: sectionScroller.aboutMeKey,
               child: AboutMe(constraints: constraints, data: data),
             ),
             SizedBox(height: constraints.maxWidth > 480 ? 40 : 100),
-            Section(
+            KeyedSubtree(
               key: sectionScroller.projectsKey,
               child: Projects(constraints: constraints, data: data),
             ),
             SizedBox(height: constraints.maxWidth > 480 ? 100 : 100),
-            Section(
+            KeyedSubtree(
               key: sectionScroller.attributesKey,
               child: Attributes(
                 constraints: constraints,
@@ -141,10 +141,9 @@ class ContentSections extends StatelessWidget {
               ),
             ),
             SizedBox(height: constraints.maxWidth > 480 ? 150 : 100),
-            Section(
+            KeyedSubtree(
               key: sectionScroller.contactKey,
-              child: Contact(
-                  constraints: constraints, context: context, data: data),
+              child: Contact(constraints: constraints, data: data),
             ),
             SizedBox(height: constraints.maxWidth > 480 ? 100 : 50),
             Footer(constraints: constraints),
@@ -152,16 +151,6 @@ class ContentSections extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class Section extends StatelessWidget {
-  final Widget child;
-  const Section({required Key key, required this.child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(child: child);
   }
 }
 
@@ -175,7 +164,7 @@ class Footer extends StatelessWidget {
       children: [
         Text(
           "© 2024 / João Antônio Gomes / Todos os direitos reservados",
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
             textStyle: TextStyle(
               fontSize: constraints.maxWidth > 480 ? 20 : 12,
               color: ColorsApp.letters(context),

@@ -1,8 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
+import 'package:portfolio/src/utils/app_lottie.dart';
 import 'package:portfolio/src/utils/colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,10 +35,8 @@ class InitialInfo extends StatelessWidget {
           SizedBox(
             width: constraints.maxWidth * 0.05,
           ),
-          Visibility(
-            visible: constraints.maxWidth > 1050,
-            child: AnimationLottie(constraints: constraints),
-          ),
+          if (constraints.maxWidth > 1050)
+            AnimationLottie(constraints: constraints),
         ],
       ),
     );
@@ -76,21 +74,15 @@ class _AnimationLottieState extends State<AnimationLottie>
 
   @override
   Widget build(BuildContext context) {
-    return Lottie.asset(
-        Theme.of(context).brightness == Brightness.dark
-            ? "assets/animations/cellphone.json"
-            : "assets/animations/cellphoneLight.json",
-        width: widget.constraints.maxWidth > 480
-            ? widget.constraints.maxWidth * .35
-            : 0,
-        height: widget.constraints.maxWidth > 480
-            ? widget.constraints.maxHeight * .75
-            : 0,
-        fit: BoxFit.fill,
-        controller: Theme.of(context).brightness == Brightness.light
-            ? _controller
-            : null,
-        repeat: true);
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    return AppLottie(
+      asset: isLight
+          ? "assets/animations/cellphoneLight.json"
+          : "assets/animations/cellphone.json",
+      width: widget.constraints.maxWidth * .35,
+      height: widget.constraints.maxHeight * .75,
+      controller: isLight ? _controller : null,
+    );
   }
 }
 
@@ -131,9 +123,7 @@ class SocialNetwork extends StatelessWidget {
   Widget build(BuildContext context) {
     List links = data["socialNetwork"];
     List icons = [EvaIcons.linkedinOutline, EvaIcons.githubOutline];
-    List<Map<String, dynamic>> items = [];
-
-    items = listSocialNetworks(links, icons);
+    List<Map<String, dynamic>> items = listSocialNetworks(links, icons);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -175,19 +165,22 @@ class Occupation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedTextKit(
-      animatedTexts: [
-        TypewriterAnimatedText(
-          data["occupation"] ?? "No description",
-          textStyle: TextStyle(
-            fontSize: constraints.maxWidth > 480 ? 30 : 25,
-            color: ColorsApp.letters(context),
+    return RepaintBoundary(
+      child: AnimatedTextKit(
+        animatedTexts: [
+          TypewriterAnimatedText(
+            data["occupation"] ?? "No description",
+            textStyle: TextStyle(
+              fontFamily: 'ABeeZee',
+              fontSize: constraints.maxWidth > 480 ? 30 : 25,
+              color: ColorsApp.letters(context),
+            ),
+            speed: const Duration(milliseconds: 200),
           ),
-          speed: const Duration(milliseconds: 200),
-        ),
-      ],
-      totalRepeatCount: 50,
-      pause: const Duration(milliseconds: 3000),
+        ],
+        totalRepeatCount: 3,
+        pause: const Duration(milliseconds: 3000),
+      ),
     );
   }
 }
@@ -207,7 +200,7 @@ class Name extends StatelessWidget {
     return Text(
       data["name"] ?? "No title",
       softWrap: true,
-      style: GoogleFonts.aBeeZee(
+      style: AppFonts.aBeeZee(
         textStyle: TextStyle(
           fontSize: constraints.maxWidth > 480 ? 50 : 35,
           color: ColorsApp.letters(context),

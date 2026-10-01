@@ -39,13 +39,15 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
   @override
   void initState() {
     super.initState();
-    _items = widget.enableInfiniteScroll
-        ? [
-            widget.items.last,
-            ...widget.items,
-            widget.items.first,
-          ]
-        : widget.items;
+    _items = widget.items.isEmpty
+        ? <Widget>[]
+        : widget.enableInfiniteScroll
+            ? [
+                widget.items.last,
+                ...widget.items,
+                widget.items.first,
+              ]
+            : widget.items;
 
     _pageController = PageController(
       initialPage: _currentPage,
@@ -68,6 +70,12 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
         _startAutoPlay();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override

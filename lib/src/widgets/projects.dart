@@ -2,8 +2,9 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:portfolio/src/controllers/home_controller.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
+import 'package:portfolio/src/utils/app_images.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/custom_carousel_slider.dart';
@@ -18,7 +19,6 @@ class Projects extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = CustomCarouselController();
     List<Object?> projects = data["projects"];
     return Column(
       children: [
@@ -26,7 +26,7 @@ class Projects extends StatelessWidget {
           padding:
               EdgeInsets.only(bottom: constraints.maxWidth > 480 ? 60 : 40),
           child: Text("|| Projetos ||",
-              style: GoogleFonts.aBeeZee(
+              style: AppFonts.aBeeZee(
                   textStyle: TextStyle(
                       fontSize: constraints.maxWidth > 480
                           ? 50
@@ -89,11 +89,12 @@ class _SliderProjectsState extends State<SliderProjects> {
               ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 30),
                   child: Text("Não há projetos",
-                      style: GoogleFonts.aBeeZee(
+                      style: AppFonts.aBeeZee(
                           fontSize: widget.constraints.maxWidth > 480 ? 18 : 16,
                           color: ColorsApp.letters(context))),
                 )
-              : CustomCarouselSlider(
+              : RepaintBoundary(
+                  child: CustomCarouselSlider(
                   items: items,
                   height: 400,
                   enlargeCenterPage: true,
@@ -102,8 +103,9 @@ class _SliderProjectsState extends State<SliderProjects> {
                   autoPlayCurve: Curves.fastEaseInToSlowEaseOut,
                   viewportFraction:
                       widget.constraints.maxWidth > 480 ? 0.65 : 0.75,
-                  controller: _controller, // Use the local controller
+                  controller: _controller,
                 ),
+              ),
         ),
         GradientEffectWidget(
             constraints: widget.constraints,
@@ -175,16 +177,16 @@ class GradientEffectWidget extends StatelessWidget {
                 end: end,
                 colors: [
                   Colors.transparent,
-                  ColorsApp.background(context).withOpacity(0.09),
-                  ColorsApp.background(context).withOpacity(0.19),
-                  ColorsApp.background(context).withOpacity(0.29),
-                  ColorsApp.background(context).withOpacity(0.39),
-                  ColorsApp.background(context).withOpacity(0.49),
-                  ColorsApp.background(context).withOpacity(0.59),
-                  ColorsApp.background(context).withOpacity(0.69),
-                  ColorsApp.background(context).withOpacity(0.79),
-                  ColorsApp.background(context).withOpacity(0.89),
-                  ColorsApp.background(context).withOpacity(0.99),
+                  ColorsApp.background(context).withValues(alpha:0.09),
+                  ColorsApp.background(context).withValues(alpha:0.19),
+                  ColorsApp.background(context).withValues(alpha:0.29),
+                  ColorsApp.background(context).withValues(alpha:0.39),
+                  ColorsApp.background(context).withValues(alpha:0.49),
+                  ColorsApp.background(context).withValues(alpha:0.59),
+                  ColorsApp.background(context).withValues(alpha:0.69),
+                  ColorsApp.background(context).withValues(alpha:0.79),
+                  ColorsApp.background(context).withValues(alpha:0.89),
+                  ColorsApp.background(context).withValues(alpha:0.99),
                 ],
               ),
             ),
@@ -241,7 +243,7 @@ class ProjectCardWidget extends StatelessWidget {
                         alignment: Alignment.bottomLeft,
                         child: Text(
                           project["state"],
-                          style: GoogleFonts.aBeeZee(
+                          style: AppFonts.aBeeZee(
                               fontSize: 16, color: ColorsApp.letters(context)),
                         ),
                       ),
@@ -255,7 +257,7 @@ class ProjectCardWidget extends StatelessWidget {
                   alignment: Alignment.bottomLeft,
                   child: Text(
                     project["state"],
-                    style: GoogleFonts.aBeeZee(
+                    style: AppFonts.aBeeZee(
                         fontSize: 25, color: ColorsApp.letters(context)),
                   ),
                 ),
@@ -282,7 +284,7 @@ class TextsWidget extends StatelessWidget {
         Text(
           project["name"],
           textAlign: TextAlign.center,
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
               fontSize:
                   constraints.maxWidth > 480 ? 30 : constraints.maxWidth * .07,
               fontWeight: FontWeight.bold,
@@ -294,7 +296,7 @@ class TextsWidget extends StatelessWidget {
         Text(
           project["description"],
           textAlign: TextAlign.center,
-          style: GoogleFonts.aBeeZee(
+          style: AppFonts.aBeeZee(
               fontSize: constraints.maxWidth > 480
                   ? 20
                   : constraints.maxWidth * .0385,
@@ -423,7 +425,7 @@ class CustomDialog extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             'Estamos trabalhando nisso',
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
                 color: ColorsApp.letters(context)),
             textAlign: TextAlign.center,
@@ -439,7 +441,7 @@ class CustomDialog extends StatelessWidget {
             },
             child: Text(
               'Fechar',
-              style: GoogleFonts.aBeeZee(
+              style: AppFonts.aBeeZee(
                   fontSize: constraints.maxWidth > 480 ? 15 : 13,
                   color: ColorsApp.letters(context)),
             ),
@@ -463,7 +465,7 @@ class DetailsWidget {
   }
 }
 
-class DetailsDialog extends StatelessWidget {
+class DetailsDialog extends StatefulWidget {
   final BoxConstraints constraints;
   final Map<String, dynamic> project;
 
@@ -471,15 +473,49 @@ class DetailsDialog extends StatelessWidget {
       {super.key, required this.constraints, required this.project});
 
   @override
-  Widget build(BuildContext context) {
-    final HomeController controller = HomeController();
-    List<String> funcionalidades =
-        List<String>.from(project["functionalities"]);
-    String plataforma = project["platform"];
-    String orientacao = project["orientation"];
+  State<DetailsDialog> createState() => _DetailsDialogState();
+}
 
-    String minhaFuncao = project["myFunction"];
-    List<String> tecnologias = List<String>.from(project["technologiesUsed"]);
+class _DetailsDialogState extends State<DetailsDialog> {
+  late final Future<List<Uint8List>> _imagesFuture;
+  late final List<Color> _techColors;
+  late final List<String> _technologies;
+
+  @override
+  void initState() {
+    super.initState();
+    _imagesFuture = HomeController().fetchImages(widget.project["name"]);
+    _technologies = List<String>.from(widget.project["technologiesUsed"]);
+    _techColors = _buildTechColors(_technologies.length);
+  }
+
+  List<Color> _buildTechColors(int count) {
+    final random = Random();
+    final usedColors = <Color>{};
+    return List.generate(count, (_) {
+      Color color;
+      do {
+        color = Color.fromRGBO(
+          random.nextInt(256),
+          random.nextInt(256),
+          random.nextInt(256),
+          1.0,
+        );
+      } while (color == Colors.white || usedColors.contains(color));
+      usedColors.add(color);
+      return color;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final constraints = widget.constraints;
+    final project = widget.project;
+    final funcionalidades = List<String>.from(project["functionalities"]);
+    final plataforma = project["platform"];
+    final orientacao = project["orientation"];
+    final minhaFuncao = project["myFunction"];
+    final techChips = _technologiesUsed(context);
 
     return Stack(
       children: [
@@ -487,7 +523,7 @@ class DetailsDialog extends StatelessWidget {
           backgroundColor: ColorsApp.backgroundDetails(context),
           title: Center(
             child: Text("Detalhes",
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 32 : 26,
                     color: ColorsApp.letters(context))),
           ),
@@ -498,18 +534,18 @@ class DetailsDialog extends StatelessWidget {
                 if (constraints.maxWidth > 480)
                   WebDetails(
                       constraints: constraints,
-                      technologiesUsed: technologiesUsed(tecnologias, context),
+                      technologiesUsed: techChips,
                       plataforma: plataforma,
                       minhaFuncao: minhaFuncao),
                 if (constraints.maxWidth <= 480)
                   MobileDetails(
                       constraints: constraints,
-                      technologiesUsed: technologiesUsed(tecnologias, context),
+                      technologiesUsed: techChips,
                       plataforma: plataforma,
                       minhaFuncao: minhaFuncao),
                 SizedBox(height: constraints.maxWidth > 480 ? 30 : 20),
                 Text("Funcionalidades do projeto",
-                    style: GoogleFonts.aBeeZee(
+                    style: AppFonts.aBeeZee(
                         fontSize: constraints.maxWidth > 480
                             ? 24
                             : constraints.maxWidth * .05,
@@ -519,11 +555,11 @@ class DetailsDialog extends StatelessWidget {
                   height: 30,
                 ),
                 Text("Imagens do projeto",
-                    style: GoogleFonts.aBeeZee(
+                    style: AppFonts.aBeeZee(
                         fontSize: constraints.maxWidth > 480 ? 24 : 23,
                         color: ColorsApp.letters(context))),
                 FutureBuilder<List<Uint8List>>(
-                  future: controller.fetchImages(project["name"]),
+                  future: _imagesFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -535,7 +571,7 @@ class DetailsDialog extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30),
                         child: Text("Erro ao carregar imagens",
-                            style: GoogleFonts.aBeeZee(
+                            style: AppFonts.aBeeZee(
                                 fontSize: constraints.maxWidth > 480 ? 18 : 16,
                                 color: Colors.red)),
                       );
@@ -543,7 +579,7 @@ class DetailsDialog extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 30),
                         child: Text("Nenhuma imagem disponível",
-                            style: GoogleFonts.aBeeZee(
+                            style: AppFonts.aBeeZee(
                                 fontSize: constraints.maxWidth > 480 ? 18 : 16,
                                 color: ColorsApp.letters(context))),
                       );
@@ -566,49 +602,24 @@ class DetailsDialog extends StatelessWidget {
     );
   }
 
-  Widget technologiesUsed(List<String> tecnologias, BuildContext context) {
-    Color getRandomColor() {
-      Random random = Random();
-      Color color;
-      do {
-        color = Color.fromRGBO(
-          random.nextInt(256),
-          random.nextInt(256),
-          random.nextInt(256),
-          1.0,
-        );
-      } while (color == Colors.white);
-      return color;
-    }
-
-    Set<Color> usedColors = {};
-
-    Color getUniqueRandomColor() {
-      Color color;
-      do {
-        color = getRandomColor();
-      } while (usedColors.contains(color));
-      usedColors.add(color);
-      return color;
-    }
-
+  Widget _technologiesUsed(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: tecnologias.map((tech) {
-        Color bgColor = getUniqueRandomColor();
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-          decoration: BoxDecoration(
-              color: bgColor, borderRadius: BorderRadius.circular(8)),
-          child: Text(
-            tech,
-            style: TextStyle(
-              color: ColorsApp.letters(context),
+      children: [
+        for (var i = 0; i < _technologies.length; i++)
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+                color: _techColors[i], borderRadius: BorderRadius.circular(8)),
+            child: Text(
+              _technologies[i],
+              style: TextStyle(
+                color: ColorsApp.letters(context),
+              ),
             ),
           ),
-        );
-      }).toList(),
+      ],
     );
   }
 }
@@ -632,12 +643,12 @@ class MobileDetails extends StatelessWidget {
       children: [
         Text("Tipo de plataforma:",
             textAlign: TextAlign.left,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
                 color: ColorsApp.letters(context))),
         Text(plataforma,
             textAlign: TextAlign.left,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
                 color: ColorsApp.letters(context))),
         const SizedBox(
@@ -645,12 +656,12 @@ class MobileDetails extends StatelessWidget {
         ),
         Text("Função desempenhada:",
             textAlign: TextAlign.left,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
                 color: ColorsApp.letters(context))),
         Text(minhaFuncao,
             textAlign: TextAlign.left,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 20 : 18,
                 color: ColorsApp.letters(context))),
         const SizedBox(
@@ -658,7 +669,7 @@ class MobileDetails extends StatelessWidget {
         ),
         Text("Tecnologias usadas:",
             textAlign: TextAlign.left,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: constraints.maxWidth > 480 ? 24 : 23,
                 color: ColorsApp.letters(context))),
         technologiesUsed,
@@ -689,12 +700,12 @@ class WebDetails extends StatelessWidget {
           children: [
             Text("Tipo de plataforma:",
                 textAlign: TextAlign.left,
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
                     color: ColorsApp.letters(context))),
             Text(plataforma,
                 textAlign: TextAlign.left,
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
                     color: ColorsApp.letters(context))),
           ],
@@ -706,12 +717,12 @@ class WebDetails extends StatelessWidget {
           children: [
             Text("Função desempenhada:",
                 textAlign: TextAlign.left,
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
                     color: ColorsApp.letters(context))),
             Text(minhaFuncao,
                 textAlign: TextAlign.left,
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 20 : 18,
                     color: ColorsApp.letters(context))),
           ],
@@ -723,7 +734,7 @@ class WebDetails extends StatelessWidget {
           children: [
             Text("Tecnologias usadas:",
                 textAlign: TextAlign.left,
-                style: GoogleFonts.aBeeZee(
+                style: AppFonts.aBeeZee(
                     fontSize: constraints.maxWidth > 480 ? 24 : 23,
                     color: ColorsApp.letters(context))),
             technologiesUsed,
@@ -775,7 +786,7 @@ class Images extends StatelessWidget {
     }
 
     int halfLength = images.length <= 3 ? 3 : (images.length / 2).ceil();
-    late double? width;
+    final double width;
     if (orientacao == "vertical") {
       if (constraints.maxWidth > 480) {
         width = 150;
@@ -797,8 +808,8 @@ class Images extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.memory(
-              image,
+            child: AppMemoryImage(
+              bytes: image,
               width: width,
               fit: BoxFit.cover,
             ),
@@ -812,7 +823,7 @@ class Images extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.memory(image, width: width),
+            child: AppMemoryImage(bytes: image, width: width),
           ),
         );
       }).toList(),
@@ -837,7 +848,7 @@ class Funtionalities extends StatelessWidget {
           leading: Icon(Icons.check, color: ColorsApp.letters(context)),
           title: Text(
             funcionalidade,
-            style: GoogleFonts.aBeeZee(
+            style: AppFonts.aBeeZee(
                 fontSize: 16, color: ColorsApp.letters(context)),
           ),
         );

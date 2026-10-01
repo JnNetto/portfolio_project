@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:portfolio/src/utils/app_fonts.dart';
 
 import '../utils/colors.dart';
 
@@ -38,7 +38,7 @@ class TitleAppBar extends StatelessWidget {
       child: Row(
         children: [
           Text("JnNetto",
-              style: GoogleFonts.poppins(
+              style: AppFonts.poppins(
                 textStyle: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
