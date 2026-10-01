@@ -1,94 +1,81 @@
 import 'package:flutter/material.dart';
 
 class ColorsApp {
-  static Color backgroundLight = const Color.fromARGB(255, 171, 182, 244);
-  static Color hoverButtonLight = const Color.fromARGB(255, 0, 119, 255);
-  static Color hoverIconLight = const Color.fromARGB(255, 120, 174, 236);
-  static Color backgroundDetailsLight =
-      const Color.fromARGB(255, 164, 151, 201);
-  static Color cardLight = const Color.fromARGB(255, 168, 193, 236);
-  static Color letterButtonLight = const Color.fromARGB(255, 0, 68, 255);
-  static Color shadowColorLight = const Color.fromARGB(255, 112, 61, 146);
-  static Color borderLight = const Color.fromARGB(255, 71, 101, 169);
-  static Color appbarLight = const Color.fromARGB(255, 64, 61, 77);
-  static Color lettersLight = const Color.fromARGB(255, 0, 0, 0);
-  static Color starsLight = const Color.fromARGB(255, 253, 227, 1);
+  static const Color backgroundLight = Color(0xFFF1F5F9);
+  static const Color hoverButtonLight = Color(0xFF16A34A);
+  static const Color hoverIconLight = Color(0xFFDCFCE7);
+  static const Color backgroundDetailsLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color letterButtonLight = Color(0xFF15803D);
+  static const Color shadowColorLight = Color(0x331E293B);
+  static const Color borderLight = Color(0xFFCBD5E1);
+  static const Color appbarLight = Color(0xFF0F172A);
+  static const Color lettersLight = Color(0xFF0F172A);
+  static const Color starsLight = Color(0xFFFBBF24);
+  static const Color mutedLight = Color(0xFF64748B);
+  static const Color accentLight = Color(0xFF16A34A);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
 
-  static Color backgroundDark = const Color.fromARGB(255, 7, 2, 22);
-  static Color hoverButtonDark = const Color.fromARGB(255, 73, 155, 248);
-  static Color hoverIconDark = const Color.fromARGB(255, 32, 23, 53);
-  static Color backgroundDetailsDark = const Color.fromARGB(255, 17, 9, 40);
-  static Color cardDark = const Color.fromARGB(255, 37, 30, 61);
-  static Color letterButtonDark = const Color.fromARGB(255, 21, 130, 219);
-  static Color shadowColorDark = const Color.fromARGB(255, 59, 46, 139);
-  static Color borderDark = const Color.fromARGB(255, 51, 30, 182);
-  static Color appbarDark = const Color.fromARGB(255, 44, 43, 51);
-  static Color lettersDark = const Color.fromARGB(255, 255, 255, 255);
-  static Color starsDark = Colors.yellow;
+  static const Color backgroundDark = Color(0xFF0F172A);
+  static const Color hoverButtonDark = Color(0xFF4ADE80);
+  static const Color hoverIconDark = Color(0xFF1E293B);
+  static const Color backgroundDetailsDark = Color(0xFF1B2336);
+  static const Color cardDark = Color(0xFF1B2336);
+  static const Color letterButtonDark = Color(0xFF4ADE80);
+  static const Color shadowColorDark = Color(0x66000000);
+  static const Color borderDark = Color(0xFF334155);
+  static const Color appbarDark = Color(0xFF0B1220);
+  static const Color lettersDark = Color(0xFFF8FAFC);
+  static const Color starsDark = Color(0xFFFACC15);
+  static const Color mutedDark = Color(0xFF94A3B8);
+  static const Color accentDark = Color(0xFF4ADE80);
+  static const Color surfaceDark = Color(0xFF1B2336);
 
-  static Color background(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? backgroundDark
-        : backgroundLight;
-  }
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 
-  static Color hoverButton(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? hoverButtonDark
-        : hoverButtonLight;
-  }
+  static Color background(BuildContext context) =>
+      _isDark(context) ? backgroundDark : backgroundLight;
 
-  static Color hoverIcon(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? hoverIconDark
-        : hoverIconLight;
-  }
+  static Color hoverButton(BuildContext context) =>
+      _isDark(context) ? hoverButtonDark : hoverButtonLight;
 
-  static Color backgroundDetails(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? backgroundDetailsDark
-        : backgroundDetailsLight;
-  }
+  static Color hoverIcon(BuildContext context) =>
+      _isDark(context) ? hoverIconDark : hoverIconLight;
 
-  static Color card(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? cardDark
-        : cardLight;
-  }
+  static Color backgroundDetails(BuildContext context) =>
+      _isDark(context) ? backgroundDetailsDark : backgroundDetailsLight;
 
-  static Color letterButton(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? letterButtonDark
-        : letterButtonLight;
-  }
+  static Color card(BuildContext context) =>
+      _isDark(context) ? cardDark : cardLight;
 
-  static Color shadowColor(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? shadowColorDark
-        : shadowColorLight;
-  }
+  static Color letterButton(BuildContext context) =>
+      _isDark(context) ? letterButtonDark : letterButtonLight;
 
-  static Color border(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? borderDark
-        : borderLight;
-  }
+  static Color shadowColor(BuildContext context) =>
+      _isDark(context) ? shadowColorDark : shadowColorLight;
 
-  static Color appbar(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? appbarDark
-        : appbarLight;
-  }
+  static Color border(BuildContext context) =>
+      _isDark(context) ? borderDark : borderLight;
 
-  static Color letters(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? lettersDark
-        : lettersLight;
-  }
+  static Color appbar(BuildContext context) =>
+      _isDark(context) ? appbarDark : appbarLight;
 
-  static Color stars(BuildContext context) {
-    return Theme.of(context).brightness == Brightness.dark
-        ? starsDark
-        : starsLight;
-  }
+  static Color letters(BuildContext context) =>
+      _isDark(context) ? lettersDark : lettersLight;
+
+  static Color stars(BuildContext context) =>
+      _isDark(context) ? starsDark : starsLight;
+
+  static Color muted(BuildContext context) =>
+      _isDark(context) ? mutedDark : mutedLight;
+
+  static Color accent(BuildContext context) =>
+      _isDark(context) ? accentDark : accentLight;
+
+  static Color surface(BuildContext context) =>
+      _isDark(context) ? surfaceDark : surfaceLight;
+
+  static Color onAccent(BuildContext context) =>
+      _isDark(context) ? const Color(0xFF0F172A) : Colors.white;
 }

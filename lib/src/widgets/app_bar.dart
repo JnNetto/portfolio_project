@@ -6,10 +6,12 @@ import '../utils/colors.dart';
 PreferredSizeWidget appBarCustom(BoxConstraints constraints, List<Widget> list,
     Widget drawer, VoidCallback toggleTheme, BuildContext context) {
   return AppBar(
-    toolbarHeight: constraints.maxHeight * .1,
+    toolbarHeight: 72,
     backgroundColor: ColorsApp.appbar(context),
+    surfaceTintColor: Colors.transparent,
     shadowColor: ColorsApp.shadowColor(context),
-    elevation: 40,
+    elevation: 0,
+    scrolledUnderElevation: 0,
     actions: constraints.maxWidth > 480 ? list : [drawer],
     title: TitleAppBar(
       constraints: constraints,
@@ -33,29 +35,33 @@ class TitleAppBar extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(
           left: constraints.maxWidth > 1050
-              ? constraints.maxWidth * 0.15
-              : constraints.maxWidth * 0.05),
+              ? 24
+              : constraints.maxWidth * 0.02),
       child: Row(
         children: [
-          Text("JnNetto",
-              style: AppFonts.poppins(
-                textStyle: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40),
-              )),
-          SizedBox(
-            width: constraints.maxWidth * 0.01,
+          Text(
+            'JnNetto',
+            style: AppFonts.poppins(
+              textStyle: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 22,
+                letterSpacing: -0.4,
+              ),
+            ),
           ),
+          const SizedBox(width: 8),
           IconButton(
+            tooltip: Theme.of(context).brightness == Brightness.dark
+                ? 'Ativar tema claro'
+                : 'Ativar tema escuro',
             onPressed: toggleTheme,
             icon: Icon(
-                Theme.of(context).brightness == Brightness.dark
-                    ? Icons.dark_mode
-                    : Icons.light_mode,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.white),
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

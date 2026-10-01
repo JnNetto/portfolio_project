@@ -21,7 +21,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isDarkTheme = false;
+  bool isDarkTheme = true;
 
   void toggleTheme() {
     setState(() {
@@ -37,10 +37,22 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.light,
         fontFamily: 'ABeeZee',
+        scaffoldBackgroundColor: const Color(0xFFF1F5F9),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF16A34A),
+          secondary: Color(0xFF334155),
+          surface: Color(0xFFFFFFFF),
+        ),
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'ABeeZee',
+        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF4ADE80),
+          secondary: Color(0xFF334155),
+          surface: Color(0xFF1B2336),
+        ),
       ),
       themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
       home: Home(

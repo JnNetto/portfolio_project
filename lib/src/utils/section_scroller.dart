@@ -25,31 +25,31 @@ class SectionScroller {
         text: "Início",
         onPressed: () => scrollToSection(initialInfoKey),
         lettersColor: Colors.white,
-        fontSize: constraints.maxWidth > 1050 ? 15 : 21,
+        fontSize: constraints.maxWidth > 1050 ? 14 : 16,
       ),
       HoverText(
         text: "Sobre mim",
         onPressed: () => scrollToSection(aboutMeKey),
         lettersColor: Colors.white,
-        fontSize: constraints.maxWidth > 1050 ? 15 : 21,
+        fontSize: constraints.maxWidth > 1050 ? 14 : 16,
       ),
       HoverText(
         text: "Projetos",
         onPressed: () => scrollToSection(projectsKey),
         lettersColor: Colors.white,
-        fontSize: constraints.maxWidth > 1050 ? 15 : 21,
+        fontSize: constraints.maxWidth > 1050 ? 14 : 16,
       ),
       HoverText(
         text: "Habilidades",
         onPressed: () => scrollToSection(attributesKey),
         lettersColor: Colors.white,
-        fontSize: constraints.maxWidth > 1050 ? 15 : 21,
+        fontSize: constraints.maxWidth > 1050 ? 14 : 16,
       ),
       HoverText(
         text: "Contato",
         onPressed: () => scrollToSection(contactKey),
         lettersColor: Colors.white,
-        fontSize: constraints.maxWidth > 1050 ? 15 : 21,
+        fontSize: constraints.maxWidth > 1050 ? 14 : 16,
       ),
       SizedBox(
         width: constraints.maxWidth > 1050

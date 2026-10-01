@@ -37,6 +37,8 @@ dependencies:
   animated_text_kit: ^4.2.2
   url_launcher: ^6.2.6
   firebase_database: ^11.0.3
+  model_viewer_plus: ^1.9.3
+  web: ^1.1.0
   
 
 dev_dependencies:
@@ -67,6 +69,7 @@ flutter:
     - assets/animations/cellphoneLight.json
     - assets/animations/computer.json
     - assets/images/construction.png
+    - assets/models/phone.glb
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
