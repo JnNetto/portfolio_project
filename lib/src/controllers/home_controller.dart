@@ -15,8 +15,14 @@ class HomeController {
 
   Future<List<Uint8List>> fetchImages(String name) {
     return _imageCache.putIfAbsent(name, () async {
-      final base64Images = await _repository.getImages(name);
-      return decodeBase64Images(base64Images);
+      try {
+        final base64Images = await _repository.getImages(name);
+        return await decodeBase64Images(base64Images);
+      } catch (_) {
+        // Sem isso uma falha ficaria em cache e "tentar de novo" não faria nada.
+        _imageCache.remove(name);
+        rethrow;
+      }
     });
   }
 }

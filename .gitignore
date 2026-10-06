@@ -61,3 +61,6 @@ CLAUDE.local.md
 AGENTS.md
 skills-lock.json
 design-system/
+
+# Exports do Firebase (dados, não código)
+*-rtdb-export*.json

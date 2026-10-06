@@ -1,15 +1,12 @@
-import 'dart:math';
-import 'dart:typed_data';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:portfolio/src/controllers/home_controller.dart';
 import 'package:portfolio/src/utils/app_fonts.dart';
-import 'package:portfolio/src/utils/app_images.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/colors.dart';
 import '../utils/custom_carousel_slider.dart';
-import '../utils/grid_menus.dart';
 import 'package:portfolio/src/utils/hover_text.dart';
+import 'package:portfolio/src/widgets/project_details.dart';
+import 'package:portfolio/src/widgets/projects_coverflow.dart';
+import 'package:portfolio/src/widgets/section_heading.dart';
 
 class Projects extends StatelessWidget {
   final BoxConstraints constraints;
@@ -22,21 +19,31 @@ class Projects extends StatelessWidget {
     List<Object?> projects = data["projects"];
     return Column(
       children: [
-        Padding(
-          padding:
-              EdgeInsets.only(bottom: constraints.maxWidth > 480 ? 60 : 40),
-          child: Text("|| Projetos ||",
-              style: AppFonts.aBeeZee(
-                  textStyle: TextStyle(
-                      fontSize: constraints.maxWidth > 480
-                          ? 50
-                          : constraints.maxWidth * .09,
-                      color: ColorsApp.letters(context)))),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: SectionHeading(
+            index: '01',
+            eyebrow: 'Projetos',
+            title: 'Projetos',
+            subtitle: 'Arraste para os lados e toque no card do centro para '
+                'ver os detalhes de cada projeto.',
+          ),
         ),
-        SliderProjects(
-          constraints: constraints,
-          projects: projects,
-        ),
+        if (projects.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            child: Text("Não há projetos",
+                style: AppFonts.aBeeZee(
+                    fontSize: constraints.maxWidth > 480 ? 18 : 16,
+                    color: ColorsApp.letters(context))),
+          )
+        else
+          ProjectsCoverflow(
+            constraints: constraints,
+            projects: [
+              for (final p in projects) Map<String, dynamic>.from(p as Map),
+            ],
+          ),
       ],
     );
   }
@@ -95,17 +102,18 @@ class _SliderProjectsState extends State<SliderProjects> {
                 )
               : RepaintBoundary(
                   child: CustomCarouselSlider(
-                  items: items,
-                  height: 400,
-                  enlargeCenterPage: true,
-                  autoPlay: false,
-                  autoPlayAnimationDuration: const Duration(milliseconds: 600),
-                  autoPlayCurve: Curves.fastEaseInToSlowEaseOut,
-                  viewportFraction:
-                      widget.constraints.maxWidth > 480 ? 0.65 : 0.75,
-                  controller: _controller,
+                    items: items,
+                    height: 400,
+                    enlargeCenterPage: true,
+                    autoPlay: false,
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 600),
+                    autoPlayCurve: Curves.fastEaseInToSlowEaseOut,
+                    viewportFraction:
+                        widget.constraints.maxWidth > 480 ? 0.65 : 0.75,
+                    controller: _controller,
+                  ),
                 ),
-              ),
         ),
         GradientEffectWidget(
             constraints: widget.constraints,
@@ -177,16 +185,16 @@ class GradientEffectWidget extends StatelessWidget {
                 end: end,
                 colors: [
                   Colors.transparent,
-                  ColorsApp.background(context).withValues(alpha:0.09),
-                  ColorsApp.background(context).withValues(alpha:0.19),
-                  ColorsApp.background(context).withValues(alpha:0.29),
-                  ColorsApp.background(context).withValues(alpha:0.39),
-                  ColorsApp.background(context).withValues(alpha:0.49),
-                  ColorsApp.background(context).withValues(alpha:0.59),
-                  ColorsApp.background(context).withValues(alpha:0.69),
-                  ColorsApp.background(context).withValues(alpha:0.79),
-                  ColorsApp.background(context).withValues(alpha:0.89),
-                  ColorsApp.background(context).withValues(alpha:0.99),
+                  ColorsApp.background(context).withValues(alpha: 0.09),
+                  ColorsApp.background(context).withValues(alpha: 0.19),
+                  ColorsApp.background(context).withValues(alpha: 0.29),
+                  ColorsApp.background(context).withValues(alpha: 0.39),
+                  ColorsApp.background(context).withValues(alpha: 0.49),
+                  ColorsApp.background(context).withValues(alpha: 0.59),
+                  ColorsApp.background(context).withValues(alpha: 0.69),
+                  ColorsApp.background(context).withValues(alpha: 0.79),
+                  ColorsApp.background(context).withValues(alpha: 0.89),
+                  ColorsApp.background(context).withValues(alpha: 0.99),
                 ],
               ),
             ),
@@ -456,437 +464,6 @@ class DetailsWidget {
   static void details(BuildContext context,
       {required BoxConstraints constraints,
       required Map<String, dynamic> project}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return DetailsDialog(constraints: constraints, project: project);
-      },
-    );
-  }
-}
-
-class DetailsDialog extends StatefulWidget {
-  final BoxConstraints constraints;
-  final Map<String, dynamic> project;
-
-  const DetailsDialog(
-      {super.key, required this.constraints, required this.project});
-
-  @override
-  State<DetailsDialog> createState() => _DetailsDialogState();
-}
-
-class _DetailsDialogState extends State<DetailsDialog> {
-  late final Future<List<Uint8List>> _imagesFuture;
-  late final List<Color> _techColors;
-  late final List<String> _technologies;
-
-  @override
-  void initState() {
-    super.initState();
-    _imagesFuture = HomeController().fetchImages(widget.project["name"]);
-    _technologies = List<String>.from(widget.project["technologiesUsed"]);
-    _techColors = _buildTechColors(_technologies.length);
-  }
-
-  List<Color> _buildTechColors(int count) {
-    final random = Random();
-    final usedColors = <Color>{};
-    return List.generate(count, (_) {
-      Color color;
-      do {
-        color = Color.fromRGBO(
-          random.nextInt(256),
-          random.nextInt(256),
-          random.nextInt(256),
-          1.0,
-        );
-      } while (color == Colors.white || usedColors.contains(color));
-      usedColors.add(color);
-      return color;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final constraints = widget.constraints;
-    final project = widget.project;
-    final funcionalidades = List<String>.from(project["functionalities"]);
-    final plataforma = project["platform"];
-    final orientacao = project["orientation"];
-    final minhaFuncao = project["myFunction"];
-    final techChips = _technologiesUsed(context);
-
-    return Stack(
-      children: [
-        AlertDialog(
-          backgroundColor: ColorsApp.backgroundDetails(context),
-          title: Center(
-            child: Text("Detalhes",
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 32 : 26,
-                    color: ColorsApp.letters(context))),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: constraints.maxWidth > 480 ? 30 : 15),
-                if (constraints.maxWidth > 480)
-                  WebDetails(
-                      constraints: constraints,
-                      technologiesUsed: techChips,
-                      plataforma: plataforma,
-                      minhaFuncao: minhaFuncao),
-                if (constraints.maxWidth <= 480)
-                  MobileDetails(
-                      constraints: constraints,
-                      technologiesUsed: techChips,
-                      plataforma: plataforma,
-                      minhaFuncao: minhaFuncao),
-                SizedBox(height: constraints.maxWidth > 480 ? 30 : 20),
-                Text("Funcionalidades do projeto",
-                    style: AppFonts.aBeeZee(
-                        fontSize: constraints.maxWidth > 480
-                            ? 24
-                            : constraints.maxWidth * .05,
-                        color: ColorsApp.letters(context))),
-                Funtionalities(funcionalidades: funcionalidades),
-                const SizedBox(
-                  height: 30,
-                ),
-                Text("Imagens do projeto",
-                    style: AppFonts.aBeeZee(
-                        fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                        color: ColorsApp.letters(context))),
-                FutureBuilder<List<Uint8List>>(
-                  future: _imagesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 50),
-                        child: CircularProgressIndicator(),
-                      ));
-                    } else if (snapshot.hasError) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Text("Erro ao carregar imagens",
-                            style: AppFonts.aBeeZee(
-                                fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                                color: Colors.red)),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Text("Nenhuma imagem disponível",
-                            style: AppFonts.aBeeZee(
-                                fontSize: constraints.maxWidth > 480 ? 18 : 16,
-                                color: ColorsApp.letters(context))),
-                      );
-                    } else {
-                      return Images(
-                        images: snapshot.data!,
-                        orientacao: orientacao,
-                        context: context,
-                        constraints: constraints,
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        ArrowBackButton(context: context),
-      ],
-    );
-  }
-
-  Widget _technologiesUsed(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (var i = 0; i < _technologies.length; i++)
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4.0),
-            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-            decoration: BoxDecoration(
-                color: _techColors[i], borderRadius: BorderRadius.circular(8)),
-            child: Text(
-              _technologies[i],
-              style: TextStyle(
-                color: ColorsApp.letters(context),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class MobileDetails extends StatelessWidget {
-  final BoxConstraints constraints;
-  final Widget technologiesUsed;
-  final String plataforma;
-  final String minhaFuncao;
-
-  const MobileDetails(
-      {super.key,
-      required this.constraints,
-      required this.technologiesUsed,
-      required this.plataforma,
-      required this.minhaFuncao});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text("Tipo de plataforma:",
-            textAlign: TextAlign.left,
-            style: AppFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters(context))),
-        Text(plataforma,
-            textAlign: TextAlign.left,
-            style: AppFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters(context))),
-        const SizedBox(
-          height: 20,
-        ),
-        Text("Função desempenhada:",
-            textAlign: TextAlign.left,
-            style: AppFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters(context))),
-        Text(minhaFuncao,
-            textAlign: TextAlign.left,
-            style: AppFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                color: ColorsApp.letters(context))),
-        const SizedBox(
-          height: 20,
-        ),
-        Text("Tecnologias usadas:",
-            textAlign: TextAlign.left,
-            style: AppFonts.aBeeZee(
-                fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                color: ColorsApp.letters(context))),
-        technologiesUsed,
-      ],
-    );
-  }
-}
-
-class WebDetails extends StatelessWidget {
-  final BoxConstraints constraints;
-  final Widget technologiesUsed;
-  final String plataforma;
-  final String minhaFuncao;
-
-  const WebDetails(
-      {super.key,
-      required this.constraints,
-      required this.technologiesUsed,
-      required this.plataforma,
-      required this.minhaFuncao});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Column(
-          children: [
-            Text("Tipo de plataforma:",
-                textAlign: TextAlign.left,
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters(context))),
-            Text(plataforma,
-                textAlign: TextAlign.left,
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters(context))),
-          ],
-        ),
-        const SizedBox(
-          width: 20,
-        ),
-        Column(
-          children: [
-            Text("Função desempenhada:",
-                textAlign: TextAlign.left,
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters(context))),
-            Text(minhaFuncao,
-                textAlign: TextAlign.left,
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 20 : 18,
-                    color: ColorsApp.letters(context))),
-          ],
-        ),
-        const SizedBox(
-          width: 20,
-        ),
-        Column(
-          children: [
-            Text("Tecnologias usadas:",
-                textAlign: TextAlign.left,
-                style: AppFonts.aBeeZee(
-                    fontSize: constraints.maxWidth > 480 ? 24 : 23,
-                    color: ColorsApp.letters(context))),
-            technologiesUsed,
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class Images extends StatelessWidget {
-  final BoxConstraints constraints;
-  final List<Uint8List> images;
-  final String orientacao;
-  final BuildContext context;
-
-  const Images(
-      {super.key,
-      required this.constraints,
-      required this.images,
-      required this.orientacao,
-      required this.context});
-
-  @override
-  Widget build(BuildContext context) {
-    dynamic zoom(
-      BuildContext context,
-      Uint8List image,
-    ) {
-      return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            backgroundColor: Colors.transparent,
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.memory(
-                    image,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                ArrowBackButton(context: context)
-              ],
-            ),
-          );
-        },
-      );
-    }
-
-    int halfLength = images.length <= 3 ? 3 : (images.length / 2).ceil();
-    final double width;
-    if (orientacao == "vertical") {
-      if (constraints.maxWidth > 480) {
-        width = 150;
-      } else {
-        width = 70;
-      }
-    } else {
-      if (constraints.maxWidth > 480) {
-        width = 350;
-      } else {
-        width = 250;
-      }
-    }
-    return GridMenus(
-      contentLine1: images.take(halfLength).map((image) {
-        return GestureDetector(
-          onTap: () {
-            zoom(context, image);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AppMemoryImage(
-              bytes: image,
-              width: width,
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      }).toList(),
-      contentLine2: images.skip(halfLength).map((image) {
-        return GestureDetector(
-          onTap: () {
-            zoom(context, image);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: AppMemoryImage(bytes: image, width: width),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class Funtionalities extends StatelessWidget {
-  const Funtionalities({
-    super.key,
-    required this.funcionalidades,
-  });
-
-  final List<String> funcionalidades;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: funcionalidades.map((funcionalidade) {
-        return ListTile(
-          leading: Icon(Icons.check, color: ColorsApp.letters(context)),
-          title: Text(
-            funcionalidade,
-            style: AppFonts.aBeeZee(
-                fontSize: 16, color: ColorsApp.letters(context)),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class ArrowBackButton extends StatelessWidget {
-  final BuildContext context;
-
-  const ArrowBackButton({super.key, required this.context});
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      top: 16,
-      left: 16,
-      child: IconButton(
-        style: ButtonStyle(
-          backgroundColor:
-              WidgetStateProperty.all(ColorsApp.backgroundDetails(context)),
-          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          shadowColor: WidgetStateProperty.all(ColorsApp.shadowColor(context)),
-          elevation: WidgetStateProperty.all(10),
-        ),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        icon: Icon(
-          EvaIcons.arrowBackOutline,
-          color: ColorsApp.letters(context),
-        ),
-      ),
-    );
+    showProjectDetails(context, project);
   }
 }
