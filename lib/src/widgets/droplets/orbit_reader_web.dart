@@ -15,6 +15,13 @@ extension type _SphericalPosition._(JSObject _) implements JSObject {
   external double get radius;
 }
 
+/// O package:web tipa clientX/clientY como int, mas o navegador entrega
+/// valores fracionados (zoom, telas de alta densidade). Lidos como double.
+extension type _PointerCoords._(JSObject _) implements JSObject {
+  external double get clientX;
+  external double get clientY;
+}
+
 /// Lê a órbita da câmera direto do <model-viewer> no DOM, já que os eventos
 /// de ponteiro sobre a platform view não chegam ao Flutter.
 class OrbitReader {
@@ -22,14 +29,14 @@ class OrbitReader {
   int _framesUntilLookup = 0;
   Offset? _pointer;
 
-  late final JSFunction _onMove = ((web.PointerEvent e) {
+  late final JSFunction _onMove = ((_PointerCoords e) {
     final el = _element;
     if (el == null) return;
     final rect = el.getBoundingClientRect();
     _pointer = Offset(e.clientX - rect.left, e.clientY - rect.top);
   }).toJS;
 
-  late final JSFunction _onLeave = ((web.PointerEvent _) {
+  late final JSFunction _onLeave = ((JSObject _) {
     _pointer = null;
   }).toJS;
 

@@ -49,5 +49,15 @@ lib/firebase_options.dart
 ios/Runner/GoogleService-Info.plist
 macos/Runner/GoogleService-Info.plist
 firebase.json
-.agents
+
+# Ferramentas de IA (skills, configs de agentes e artefatos gerados)
+.claude/
+.agents/
+.cursor/
+.codex/
+.gemini/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
 skills-lock.json
+design-system/

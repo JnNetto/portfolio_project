@@ -6,6 +6,7 @@ import 'package:portfolio/src/utils/section_scroller.dart';
 import 'package:portfolio/src/widgets/app_bar.dart';
 import 'package:portfolio/src/widgets/attributes.dart';
 import 'package:portfolio/src/widgets/contact.dart';
+import 'package:portfolio/src/widgets/droplets/site_droplets.dart';
 import 'package:portfolio/src/widgets/initial_info.dart';
 import 'package:portfolio/src/widgets/laya_command_bar.dart';
 import 'package:portfolio/src/widgets/projects.dart';
@@ -76,11 +77,13 @@ class _HomeState extends State<Home> {
                   context),
               body: Stack(
                 children: [
-                  BodyContent(
-                    info: _info,
-                    constraints: constraints,
-                    sectionScroller: _sectionScroller,
-                    actions: _actions,
+                  SiteDroplets(
+                    child: BodyContent(
+                      info: _info,
+                      constraints: constraints,
+                      sectionScroller: _sectionScroller,
+                      actions: _actions,
+                    ),
                   ),
                   Positioned(
                     left: 0,
@@ -125,8 +128,9 @@ class BodyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: ColorsApp.background(context),
+    // Fundo transparente: a cor vem do Scaffold e as gotas de trás
+    // (SiteDroplets) aparecem entre o fundo e o conteúdo.
+    return SizedBox.expand(
       child: FutureBuilder<Map<String, dynamic>>(
         future: info,
         builder: (context, snapshot) {

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:portfolio/src/widgets/droplets/droplet_brush.dart';
 import 'package:portfolio/src/widgets/droplets/orbit_reader.dart';
 
 /// Gotas d'água flutuando em órbita ao redor de [child].
@@ -93,9 +94,7 @@ class _WaterDropletFieldState extends State<WaterDropletField>
 
   @override
   Widget build(BuildContext context) {
-    final palette = Theme.of(context).brightness == Brightness.dark
-        ? _DropletPalette.dark
-        : _DropletPalette.light;
+    final palette = DropletPalette.of(context);
 
     return Stack(
       fit: StackFit.expand,
@@ -193,6 +192,13 @@ class _DropletSim extends ChangeNotifier {
     final rnd = math.Random(7);
     double lerp(double a, double b) => a + (b - a) * rnd.nextDouble();
 
+    // Alguns "bolsões" onde as gotas se acumulam, para fugir do anel
+    // uniforme: cada gota cai num bolsão ou fica solta.
+    final pockets = List.generate(
+      7,
+      (_) => (angle: lerp(0, math.pi * 2), height: lerp(-1, 1)),
+    );
+
     return List.generate(count, (i) {
       final u = rnd.nextDouble();
       final size = u < 0.6
@@ -201,10 +207,23 @@ class _DropletSim extends ChangeNotifier {
               ? lerp(3.2, 6.5)
               : lerp(6.5, 11);
       final heaviness = ((size - 1.4) / 9.6).clamp(0.0, 1.0);
+
+      final double angle;
+      final double height;
+      if (rnd.nextDouble() < 0.65) {
+        final p = pockets[rnd.nextInt(pockets.length)];
+        angle = p.angle + _gaussian(rnd) * 0.45;
+        height = (p.height + _gaussian(rnd) * 0.22).clamp(-1.25, 1.25);
+      } else {
+        angle = lerp(0, math.pi * 2);
+        height = lerp(-1.25, 1.25);
+      }
+
       return _Droplet(
-        angle: (i / count) * math.pi * 2 + lerp(-0.25, 0.25),
-        ring: lerp(0.42, 1.0),
-        height: lerp(-1, 1),
+        angle: angle,
+        // Maioria perto do aparelho, algumas bem afastadas.
+        ring: 0.38 + math.pow(rnd.nextDouble(), 1.6) * 0.8,
+        height: height,
         size: size,
         phase: lerp(0, math.pi * 2),
         bobAmp: lerp(0.01, 0.035),
@@ -214,6 +233,12 @@ class _DropletSim extends ChangeNotifier {
         stiffness: 70 - 52 * heaviness,
       );
     });
+  }
+
+  static double _gaussian(math.Random rnd) {
+    final u1 = 1 - rnd.nextDouble();
+    final u2 = rnd.nextDouble();
+    return math.sqrt(-2 * math.log(u1)) * math.cos(2 * math.pi * u2);
   }
 
   void snap(double theta) {
@@ -319,44 +344,15 @@ class _DropletSim extends ChangeNotifier {
   double get time => _time;
 }
 
-class _DropletPalette {
-  final Color body;
-  final Color rim;
-  final Color highlight;
-
-  const _DropletPalette({
-    required this.body,
-    required this.rim,
-    required this.highlight,
-  });
-
-  static const dark = _DropletPalette(
-    body: Color(0xFFBFE6FF),
-    rim: Color(0xFFDDF3FF),
-    highlight: Color(0xFFFFFFFF),
-  );
-
-  static const light = _DropletPalette(
-    body: Color(0xFF7FB3D5),
-    rim: Color(0xFF47657A),
-    highlight: Color(0xFFFFFFFF),
-  );
-}
-
 class _DropletPainter extends CustomPainter {
   final _DropletSim sim;
   final bool front;
-  final _DropletPalette palette;
+  final DropletBrush brush;
 
-  final _fill = Paint();
-  final _stroke = Paint()..style = PaintingStyle.stroke;
-  final _caustic = Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeCap = StrokeCap.round;
-  final _shine = Paint();
-
-  _DropletPainter(this.sim, {required this.front, required this.palette})
-      : super(repaint: sim);
+  _DropletPainter(this.sim,
+      {required this.front, required DropletPalette palette})
+      : brush = DropletBrush(palette),
+        super(repaint: sim);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -370,85 +366,22 @@ class _DropletPainter extends CustomPainter {
     for (final d in layer) {
       // Gotas atrás do aparelho ficam mais apagadas, como fora de foco.
       final alpha = front ? 1.0 : (0.75 + d.depth * 0.35).clamp(0.35, 0.75);
-      _drawDroplet(canvas, d, alpha);
+      brush.draw(
+        canvas,
+        pos: d.pos,
+        radius: d.radius,
+        velocity: d.screenVel,
+        wobble: d.wobble,
+        time: sim.time,
+        phase: d.phase,
+        alpha: alpha,
+      );
     }
-  }
-
-  void _drawDroplet(Canvas canvas, _Droplet d, double alpha) {
-    final r = d.radius;
-    if (r < 0.6) return;
-
-    canvas.save();
-    canvas.translate(d.pos.dx, d.pos.dy);
-
-    // Estica na direção do movimento e oscila depois de um impulso.
-    final speed = d.screenVel.distance;
-    final stretch = 1 + math.min(0.45, speed / 900);
-    final w = d.wobble * math.sin(sim.time * 16 + d.phase);
-    final dir = speed > 1 ? math.atan2(d.screenVel.dy, d.screenVel.dx) : 0.0;
-    canvas
-      ..rotate(dir)
-      ..scale(stretch * (1 + w), (1 - w) / stretch)
-      ..rotate(-dir);
-
-    if (r < 2.4) {
-      _fill.color = palette.rim.withValues(alpha: 0.38 * alpha);
-      canvas.drawCircle(Offset.zero, r, _fill);
-      _fill.color = palette.highlight.withValues(alpha: 0.8 * alpha);
-      canvas.drawCircle(Offset(-r * 0.3, -r * 0.3), r * 0.35, _fill);
-      canvas.restore();
-      return;
-    }
-
-    final rect = Rect.fromCircle(center: Offset.zero, radius: r);
-    _fill
-      ..color = const Color(0xFFFFFFFF)
-      ..shader = RadialGradient(
-        center: const Alignment(0.15, 0.25),
-        radius: 0.95,
-        colors: [
-          palette.body.withValues(alpha: 0.02 * alpha),
-          palette.body.withValues(alpha: 0.08 * alpha),
-          palette.rim.withValues(alpha: 0.3 * alpha),
-        ],
-        stops: const [0, 0.72, 1],
-      ).createShader(rect);
-    canvas.drawCircle(Offset.zero, r, _fill);
-    _fill.shader = null;
-
-    // Luz refratada concentrada na borda inferior.
-    _caustic
-      ..strokeWidth = r * 0.16
-      ..color = palette.highlight.withValues(alpha: 0.32 * alpha);
-    canvas.drawArc(
-      Rect.fromCircle(center: Offset.zero, radius: r * 0.68),
-      0.35,
-      1.5,
-      false,
-      _caustic,
-    );
-
-    _stroke
-      ..strokeWidth = math.max(0.6, r * 0.07)
-      ..color = palette.rim.withValues(alpha: 0.42 * alpha);
-    canvas.drawCircle(Offset.zero, r, _stroke);
-
-    // Reflexo especular.
-    _shine.color = palette.highlight.withValues(alpha: 0.85 * alpha);
-    canvas
-      ..save()
-      ..translate(-r * 0.36, -r * 0.38)
-      ..rotate(-0.6)
-      ..drawOval(
-        Rect.fromCenter(center: Offset.zero, width: r * 0.5, height: r * 0.28),
-        _shine,
-      )
-      ..restore();
-
-    canvas.restore();
   }
 
   @override
   bool shouldRepaint(_DropletPainter old) =>
-      old.sim != sim || old.front != front || old.palette != palette;
+      old.sim != sim ||
+      old.front != front ||
+      old.brush.palette != brush.palette;
 }

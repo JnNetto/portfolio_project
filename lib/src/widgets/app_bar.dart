@@ -12,10 +12,25 @@ PreferredSizeWidget appBarCustom(BoxConstraints constraints, List<Widget> list,
     shadowColor: ColorsApp.shadowColor(context),
     elevation: 0,
     scrolledUnderElevation: 0,
-    actions: constraints.maxWidth > 480 ? list : [drawer],
-    title: TitleAppBar(
-      constraints: constraints,
-      toggleTheme: toggleTheme,
+    // Os links só cabem ao lado do título a partir de ~860px; abaixo disso,
+    // menu lateral. O FittedBox evita overflow em larguras transitórias
+    // (ex.: janela sendo redimensionada).
+    actions: [
+      FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: constraints.maxWidth > 860 ? list : [drawer],
+        ),
+      ),
+    ],
+    title: FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: TitleAppBar(
+        constraints: constraints,
+        toggleTheme: toggleTheme,
+      ),
     ),
   );
 }
@@ -38,6 +53,7 @@ class TitleAppBar extends StatelessWidget {
               ? 24
               : constraints.maxWidth * 0.02),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             'JnNetto',
