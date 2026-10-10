@@ -51,6 +51,7 @@ class OrbitReader {
       final viewer = el as _ModelViewerElement;
       final orbit = viewer.getCameraOrbit();
       return OrbitReading(
+        cameraTheta: orbit.theta,
         theta: orbit.theta - (viewer.turntableRotation ?? 0),
         phi: orbit.phi,
         radius: orbit.radius,

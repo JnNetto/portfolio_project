@@ -11,7 +11,12 @@ class OrbitReading {
   final double radius;
   final Offset? pointer;
 
+  /// Ângulo da câmera sem descontar o auto-rotate: só muda quando o
+  /// visitante gira o modelo.
+  final double cameraTheta;
+
   const OrbitReading({
+    required this.cameraTheta,
     required this.theta,
     required this.phi,
     required this.radius,

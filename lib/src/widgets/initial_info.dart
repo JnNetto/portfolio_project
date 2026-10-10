@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,35 @@ import 'package:portfolio/src/utils/colors.dart';
 import 'package:portfolio/src/widgets/about_me.dart';
 import 'package:portfolio/src/widgets/phone_viewer.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Logos já decodificados, para não refazer o base64 a cada build.
+final _badgeCache = <String, TechBadge>{};
+
+/// As tecnologias principais viram selos ao redor do celular, usando os
+/// logos que já estão nas habilidades do banco.
+List<TechBadge> _techBadges(Map<String, dynamic> data) {
+  const preferred = ['Flutter', 'Firebase', 'Supabase', 'Kotlin'];
+  final attributes = (data['attributes'] as List?) ?? const [];
+  final badges = <TechBadge>[];
+  for (final name in preferred) {
+    for (final a in attributes) {
+      if (a is! Map) continue;
+      final title = '${a['title'] ?? ''}';
+      final image = a['image'];
+      if (!title.startsWith(name) || image is! String || image.isEmpty) {
+        continue;
+      }
+      try {
+        badges.add(
+            _badgeCache[title] ??= (title: title, image: base64Decode(image)));
+      } catch (_) {
+        // Imagem inválida: o selo dessa tecnologia só não aparece.
+      }
+      break;
+    }
+  }
+  return badges;
+}
 
 class InitialInfo extends StatelessWidget {
   final BoxConstraints constraints;
@@ -39,7 +70,10 @@ class InitialInfo extends StatelessWidget {
       onContact: onContact,
       aboutKey: aboutKey,
     );
-    final phone = PhoneViewer(constraints: constraints);
+    final phone = PhoneViewer(
+      constraints: constraints,
+      badges: _techBadges(data),
+    );
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -114,7 +148,8 @@ class HeroCopy extends StatelessWidget {
                 minimumSize: const Size(48, 48),
                 backgroundColor: ColorsApp.accent(context),
                 foregroundColor: ColorsApp.onAccent(context),
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -127,7 +162,8 @@ class HeroCopy extends StatelessWidget {
                 minimumSize: const Size(48, 48),
                 foregroundColor: ColorsApp.letters(context),
                 side: BorderSide(color: ColorsApp.border(context), width: 1.4),
-                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -286,6 +322,14 @@ class _HeroAbout extends StatelessWidget {
     required this.data,
   });
 
+  // Atalhos visuais: quem lê pouco entende de cara com o que eu trabalho.
+  static const _highlights = [
+    (Icons.devices_rounded, 'Mobile e Web', 'Android, iOS, web e desktop'),
+    (Icons.bolt_rounded, '~2 anos', 'em produção com Flutter e Firebase'),
+    (Icons.sensors_rounded, 'Hardware', 'RFID, balanças, serial e BLE'),
+    (Icons.school_rounded, 'Eng. de Software', 'iCEV · conclusão em 2026'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -306,6 +350,92 @@ class _HeroAbout extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           TextAboutMe(constraints: constraints, data: data),
+          const SizedBox(height: 20),
+          LayoutBuilder(
+            builder: (context, box) {
+              const gap = 10.0;
+              // Duas colunas sempre que couber; uma só em telas muito estreitas.
+              final columns = box.maxWidth >= 340 ? 2 : 1;
+              final width = (box.maxWidth - gap * (columns - 1)) / columns;
+              return Wrap(
+                spacing: gap,
+                runSpacing: gap,
+                children: [
+                  for (final (icon, title, subtitle) in _highlights)
+                    SizedBox(
+                      width: width,
+                      child: _Highlight(
+                        icon: icon,
+                        title: title,
+                        subtitle: subtitle,
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Highlight extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _Highlight({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: ColorsApp.surface(context),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ColorsApp.border(context)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: ColorsApp.accent(context).withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 19, color: ColorsApp.accent(context)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: ColorsApp.letters(context),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: ColorsApp.muted(context),
+                    fontSize: 12.5,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

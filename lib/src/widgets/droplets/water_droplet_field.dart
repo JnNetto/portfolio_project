@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:portfolio/src/utils/viewport_visibility.dart';
 import 'package:portfolio/src/widgets/droplets/droplet_brush.dart';
 import 'package:portfolio/src/widgets/droplets/orbit_reader.dart';
 
@@ -14,34 +15,71 @@ class WaterDropletField extends StatefulWidget {
   final Widget child;
   final int count;
 
-  const WaterDropletField({super.key, required this.child, this.count = 70});
+  /// Chamado uma vez, quando o visitante gira o modelo pela primeira vez.
+  final VoidCallback? onUserOrbit;
+
+  /// No modo fixo o modelo não acompanha o arraste, e as gotas também não.
+  final bool followDrag;
+
+  const WaterDropletField({
+    super.key,
+    required this.child,
+    this.count = 70,
+    this.onUserOrbit,
+    this.followDrag = true,
+  });
 
   @override
   State<WaterDropletField> createState() => _WaterDropletFieldState();
 }
 
 class _WaterDropletFieldState extends State<WaterDropletField>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, ViewportVisibility {
   static const _defaultPhi = 78 * math.pi / 180;
   // Velocidade padrão do auto-rotate do model-viewer (~32deg/s).
   static const _autoRotateSpeed = 0.56;
 
   late final _sim = _DropletSim(widget.count);
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
   final _reader = OrbitReader();
 
   Duration _last = Duration.zero;
   double _localTheta = 0;
   Offset? _localPointer;
   bool? _usingDom;
+  double? _lastCameraTheta;
+  bool _userOrbited = false;
+
+  void _markUserOrbit() {
+    if (_userOrbited) return;
+    _userOrbited = true;
+    widget.onUserOrbit?.call();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // No initState, e não com `late` preguiçoso: um widget descartado sem
+    // nunca ter animado criaria o ticker dentro do dispose() e quebraria.
+    _ticker = createTicker(_onTick);
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    if (reduceMotion && _ticker.isActive) {
+    _syncTicker();
+  }
+
+  @override
+  void onViewportVisibilityChanged(bool visible) => _syncTicker();
+
+  /// Só anima com o celular na tela e sem "reduzir movimento".
+  void _syncTicker() {
+    final animate =
+        visibleInViewport && !MediaQuery.disableAnimationsOf(context);
+    if (!animate && _ticker.isActive) {
       _ticker.stop();
-    } else if (!reduceMotion && !_ticker.isActive) {
+    } else if (animate && !_ticker.isActive) {
       _last = Duration.zero;
       _ticker.start();
     }
@@ -66,6 +104,11 @@ class _WaterDropletFieldState extends State<WaterDropletField>
     var zoom = 1.0;
 
     if (reading != null) {
+      final last = _lastCameraTheta;
+      if (last != null && (reading.cameraTheta - last).abs() > 0.002) {
+        _markUserOrbit();
+      }
+      _lastCameraTheta = reading.cameraTheta;
       theta = reading.theta;
       phi = reading.phi;
       _sim.baseRadius ??= reading.radius;
@@ -113,7 +156,9 @@ class _WaterDropletFieldState extends State<WaterDropletField>
             onPointerDown: (e) => _localPointer = e.localPosition,
             onPointerMove: (e) {
               _localPointer = e.localPosition;
+              if (!widget.followDrag) return;
               _localTheta -= e.delta.dx * 0.012;
+              if (e.delta.dx.abs() > 2) _markUserOrbit();
             },
             child: widget.child,
           ),
