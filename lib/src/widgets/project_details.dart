@@ -312,24 +312,32 @@ class _Header extends StatelessWidget {
                     ),
                   Row(
                     children: [
-                      Flexible(
-                        child: Text(
-                          platform.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.75),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 2.4,
-                          ),
+                      // Expanded (e não Flexible + Spacer): o espaço que o
+                      // texto não usa fica aqui, e o fechar vai para a borda.
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                platform.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.75),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 2.4,
+                                ),
+                              ),
+                            ),
+                            if (state.isNotEmpty) ...[
+                              const SizedBox(width: 12),
+                              _GlassPill(text: state),
+                            ],
+                          ],
                         ),
                       ),
-                      if (state.isNotEmpty) ...[
-                        const SizedBox(width: 12),
-                        _GlassPill(text: state),
-                      ],
-                      const Spacer(),
+                      const SizedBox(width: 12),
                       _CloseButton(onPressed: onClose),
                     ],
                   ),

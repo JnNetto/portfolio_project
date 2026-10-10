@@ -21,7 +21,7 @@ const _rotate = 44.0; // graus que o primeiro vizinho inclina
 const _depth = 0.6; // quanto o primeiro vizinho recua, em larguras de card
 const _perspective = 3.0; // distância do observador, em larguras de card
 const _falloff = 0.56; // expoente na distância: <1 suaviza o giro ao afastar
-const _fade = 0.1; // opacidade perdida por passo a partir do centro
+const _fade = 0.32; // opacidade perdida por passo a partir do centro
 const _gap = 0.05; // espaço entre cards, em larguras de card
 const _ease = 0.16; // fração da distância restante percorrida por frame
 const _shadowPad = 40.0; // folga vertical para as sombras não serem cortadas
@@ -47,7 +47,7 @@ class _ProjectsCoverflowState extends State<ProjectsCoverflow>
   final _pos = ValueNotifier<double>(0);
   final _selected = ValueNotifier<int>(0);
   final _focus = FocusNode(debugLabel: 'ProjectsCoverflow');
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
 
   /// Para onde o assentamento atual vai. Avançar a partir dele, e não de
   /// `pos`, evita engolir uma tecla apertada no meio da animação.
@@ -58,6 +58,14 @@ class _ProjectsCoverflowState extends State<ProjectsCoverflow>
   Timer? _settling;
 
   int get _count => widget.projects.length;
+
+  @override
+  void initState() {
+    super.initState();
+    // No initState, e não com `late` preguiçoso: um widget descartado sem
+    // nunca ter animado criaria o ticker dentro do dispose() e quebraria.
+    _ticker = createTicker(_onTick);
+  }
 
   @override
   void didChangeDependencies() {
@@ -164,8 +172,11 @@ class _ProjectsCoverflowState extends State<ProjectsCoverflow>
     final screen = MediaQuery.sizeOf(context);
     final portrait = screen.height > screen.width;
     final side = portrait
-        ? math.min(screen.width * 0.64, 320.0)
-        : (screen.width * 0.24).clamp(240.0, 330.0);
+        ? math.min(screen.width * 0.72, 340.0)
+        : (screen.width * 0.26).clamp(260.0, 360.0);
+    // Quantos cards de cada lado continuam visíveis: no celular só os
+    // vizinhos imediatos, no desktop até dois.
+    final visibleRange = portrait ? 1.6 : 2.6;
     final pitch = side * (1 + _gap);
 
     return Semantics(
@@ -202,30 +213,39 @@ class _ProjectsCoverflowState extends State<ProjectsCoverflow>
                       final carried = (v * 0.18).clamp(-2.0, 2.0);
                       _settle(_clamp((_pos.value + carried).roundToDouble()));
                     },
-                    child: ClipRect(
-                      child: SizedBox(
-                        height: side + _shadowPad * 2,
-                        width: double.infinity,
-                        child: ValueListenableBuilder<int>(
-                          valueListenable: _selected,
-                          builder: (context, selected, _) => Flow(
-                            delegate: _CoverflowDelegate(
-                              pos: _pos,
-                              side: side,
-                              count: _count,
-                              loop: widget.loop,
-                            ),
-                            children: [
-                              for (var i = 0; i < _count; i++)
-                                GestureDetector(
-                                  onTap: () => _onTap(i),
-                                  child: ProjectCover(
-                                    project: widget.projects[i],
-                                    scale: side * 0.66,
-                                    front: i == selected,
+                    // O giro repinta só o palco do carrossel.
+                    child: RepaintBoundary(
+                      child: ClipRect(
+                        child: SizedBox(
+                          height: side + _shadowPad * 2,
+                          width: double.infinity,
+                          child: ValueListenableBuilder<int>(
+                            valueListenable: _selected,
+                            builder: (context, selected, _) => Flow(
+                              delegate: _CoverflowDelegate(
+                                pos: _pos,
+                                side: side,
+                                count: _count,
+                                loop: widget.loop,
+                                visibleRange: visibleRange,
+                              ),
+                              children: [
+                                for (var i = 0; i < _count; i++)
+                                  GestureDetector(
+                                    onTap: () => _onTap(i),
+                                    // Cada card vira uma camada própria: no
+                                    // arraste só muda a transformação, sem
+                                    // redesenhar textos, gradiente e sombra.
+                                    child: RepaintBoundary(
+                                      child: ProjectCover(
+                                        project: widget.projects[i],
+                                        scale: side * 0.78,
+                                        front: i == selected,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -257,7 +277,9 @@ class _ProjectsCoverflowState extends State<ProjectsCoverflow>
             valueListenable: _selected,
             builder: (context, selected, _) => Column(
               children: [
-                _Caption(project: widget.projects[selected]),
+                _Caption(
+                    project: widget.projects[selected],
+                    onOpen: () => _onTap(selected)),
                 const SizedBox(height: 20),
                 _Pagination(
                   count: _count,
@@ -280,12 +302,14 @@ class _CoverflowDelegate extends FlowDelegate {
   final double side;
   final int count;
   final bool loop;
+  final double visibleRange;
 
   _CoverflowDelegate({
     required this.pos,
     required this.side,
     required this.count,
     required this.loop,
+    required this.visibleRange,
   }) : super(repaint: pos);
 
   @override
@@ -326,8 +350,17 @@ class _CoverflowDelegate extends FlowDelegate {
       // Um card atravessa o anel exatamente a meia volta; precisa ter sumido
       // antes disso, ou o salto aparece.
       final edge = loop ? (count / 2 - distance).clamp(0.0, 1.0) : 1.0;
-      final opacity = math.max(0.0, 1 - _fade * distance) * edge;
+      // Some suavemente ao passar do alcance visível.
+      final range = (visibleRange - distance).clamp(0.0, 1.0);
+      final opacity = math.max(0.0, 1 - _fade * distance) * edge * range;
       if (opacity <= 0.01) continue;
+
+      // Fora da tela não se pinta: com muitos projetos, a maior parte dos
+      // cards fica além das bordas. A perspectiva aproxima os cards que
+      // recuam, então a posição projetada é menor que offset * pitch.
+      final depthScale = _perspective / (_perspective + _depth * ramp);
+      final projectedX = (offset * pitch).abs() * depthScale;
+      if (projectedX - side * depthScale > context.size.width / 2) continue;
 
       final transform = Matrix4.translationValues(center.dx, center.dy, 0)
         ..multiply(perspective)
@@ -344,7 +377,8 @@ class _CoverflowDelegate extends FlowDelegate {
       old.pos != pos ||
       old.side != side ||
       old.count != count ||
-      old.loop != loop;
+      old.loop != loop ||
+      old.visibleRange != visibleRange;
 
   @override
   bool shouldRelayout(_CoverflowDelegate old) => old.side != side;
@@ -377,11 +411,13 @@ class _NavButton extends StatelessWidget {
   }
 }
 
-/// Legenda do projeto em foco, com troca suave a cada mudança.
+/// Legenda do projeto em foco, com troca suave a cada mudança. É onde a
+/// informação do projeto fica legível, então ganha espaço e destaque.
 class _Caption extends StatelessWidget {
   final Map<String, dynamic> project;
+  final VoidCallback onOpen;
 
-  const _Caption({required this.project});
+  const _Caption({required this.project, required this.onOpen});
 
   @override
   Widget build(BuildContext context) {
@@ -397,9 +433,9 @@ class _Caption extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       child: Padding(
         key: ValueKey(project['name']),
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
+          constraints: const BoxConstraints(maxWidth: 480),
           child: Column(
             children: [
               Text(
@@ -407,50 +443,83 @@ class _Caption extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppFonts.poppins(
                   textStyle: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.3,
+                    fontSize: 26,
+                    height: 1.15,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
                     color: ColorsApp.letters(context),
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 10),
               Text(
                 '${project['description'] ?? ''}',
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 13, color: ColorsApp.muted(context)),
+                style: TextStyle(
+                  fontSize: 16,
+                  height: 1.5,
+                  color: ColorsApp.muted(context),
+                ),
               ),
               const SizedBox(height: 20),
-              for (final (label, value) in meta)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ColorsApp.muted(context),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          value,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: ColorsApp.letters(context),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 10,
                 ),
+                decoration: BoxDecoration(
+                  color: ColorsApp.surface(context),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: ColorsApp.border(context)),
+                ),
+                child: Column(
+                  children: [
+                    for (final (label, value) in meta)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 7),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              label,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: ColorsApp.muted(context),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                value,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsApp.letters(context),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              FilledButton.icon(
+                onPressed: onOpen,
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                  backgroundColor: ColorsApp.accent(context),
+                  foregroundColor: ColorsApp.onAccent(context),
+                  padding: const EdgeInsets.symmetric(horizontal: 22),
+                  shape: const StadiumBorder(),
+                ),
+                icon: const Icon(Icons.open_in_full_rounded, size: 18),
+                label: const Text('Ver detalhes do projeto'),
+              ),
             ],
           ),
         ),

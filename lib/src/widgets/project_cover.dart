@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:portfolio/src/utils/app_fonts.dart';
 
@@ -109,7 +111,6 @@ class _ProjectCoverState extends State<ProjectCover> {
   Widget build(BuildContext context) {
     final p = widget.project;
     final name = '${p['name'] ?? ''}';
-    final description = '${p['description'] ?? ''}';
     final platform = '${p['platform'] ?? ''}';
     final state = '${p['state'] ?? ''}';
     final techs = (p['technologiesUsed'] as List?)?.map((e) => '$e').toList() ??
@@ -163,7 +164,7 @@ class _ProjectCoverState extends State<ProjectCover> {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.7),
-                                fontSize: h * 0.045,
+                                fontSize: math.max(10.5, h * 0.05),
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: h * 0.008,
                               ),
@@ -180,25 +181,14 @@ class _ProjectCoverState extends State<ProjectCover> {
                         style: AppFonts.poppins(
                           textStyle: TextStyle(
                             color: Colors.white,
-                            fontSize: h * 0.11,
+                            fontSize: h * 0.13,
                             height: 1.05,
                             fontWeight: FontWeight.w700,
                             letterSpacing: -0.4,
                           ),
                         ),
                       ),
-                      SizedBox(height: h * 0.03),
-                      Text(
-                        description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.72),
-                          fontSize: h * 0.05,
-                          height: 1.35,
-                        ),
-                      ),
-                      SizedBox(height: h * 0.05),
+                      SizedBox(height: h * 0.06),
                       Row(
                         children: [
                           Expanded(
@@ -261,7 +251,7 @@ class _Pill extends StatelessWidget {
         text,
         style: TextStyle(
           color: strong ? const Color(0xFF0F172A) : Colors.white,
-          fontSize: scale * 0.042,
+          fontSize: math.max(11, scale * 0.05),
           fontWeight: strong ? FontWeight.w700 : FontWeight.w500,
         ),
       ),
