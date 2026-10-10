@@ -188,7 +188,8 @@ class ContentSections extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 140),
         child: Column(
           children: [
-            KeyedSubtree(
+            RepaintBoundary(
+                child: KeyedSubtree(
               key: sectionScroller.initialInfoKey,
               child: InitialInfo(
                 constraints: constraints,
@@ -197,26 +198,29 @@ class ContentSections extends StatelessWidget {
                 onContact: actions.goContact,
                 aboutKey: sectionScroller.aboutMeKey,
               ),
-            ),
+            )),
             SizedBox(height: constraints.maxWidth > 480 ? 40 : 80),
-            KeyedSubtree(
+            RepaintBoundary(
+                child: KeyedSubtree(
               key: sectionScroller.projectsKey,
               child: Projects(constraints: constraints, data: data),
-            ),
+            )),
             SizedBox(height: constraints.maxWidth > 480 ? 80 : 80),
-            KeyedSubtree(
+            RepaintBoundary(
+                child: KeyedSubtree(
               key: sectionScroller.attributesKey,
               child: Attributes(
                 constraints: constraints,
                 data: data,
                 attributeKey: sectionScroller.attributesKey,
               ),
-            ),
+            )),
             SizedBox(height: constraints.maxWidth > 480 ? 120 : 80),
-            KeyedSubtree(
+            RepaintBoundary(
+                child: KeyedSubtree(
               key: sectionScroller.contactKey,
               child: Contact(constraints: constraints, data: data),
-            ),
+            )),
             SizedBox(height: constraints.maxWidth > 480 ? 80 : 40),
             Footer(constraints: constraints),
           ],

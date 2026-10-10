@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:portfolio/src/utils/colors.dart';
+import 'package:portfolio/src/utils/viewport_visibility.dart';
 import 'package:portfolio/src/widgets/decision_lab/snake_engine.dart';
 
 const _tick = Duration(milliseconds: 140);
@@ -36,7 +37,7 @@ class DecisionLab extends StatefulWidget {
   State<DecisionLab> createState() => _DecisionLabState();
 }
 
-class _DecisionLabState extends State<DecisionLab> {
+class _DecisionLabState extends State<DecisionLab> with ViewportVisibility {
   final _engine = SnakeEngine();
   final _userFoods = <Cell>{};
   Timer? _timer;
@@ -47,6 +48,13 @@ class _DecisionLabState extends State<DecisionLab> {
   void initState() {
     super.initState();
     _timer = Timer.periodic(_tick, (_) => _step());
+  }
+
+  // Fora da tela o jogo pausa: nada de passos nem repinturas invisíveis.
+  @override
+  void onViewportVisibilityChanged(bool visible) {
+    _timer?.cancel();
+    _timer = visible ? Timer.periodic(_tick, (_) => _step()) : null;
   }
 
   @override
@@ -82,52 +90,54 @@ class _DecisionLabState extends State<DecisionLab> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, box) {
-        final side = box.maxWidth >= 620;
-        final board = _Board(
-          engine: _engine,
-          userFoods: _userFoods,
-          hover: _hover,
-          ended: _restart != null,
-          onHover: (c) => setState(() => _hover = c),
-          onTap: _addFood,
-        );
-        final panel = _Panel(engine: _engine, compact: !side);
+    return RepaintBoundary(
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final side = box.maxWidth >= 620;
+          final board = _Board(
+            engine: _engine,
+            userFoods: _userFoods,
+            hover: _hover,
+            ended: _restart != null,
+            onHover: (c) => setState(() => _hover = c),
+            onTap: _addFood,
+          );
+          final panel = _Panel(engine: _engine, compact: !side);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _TopBar(engine: _engine, onReset: _reset),
-            const SizedBox(height: 16),
-            if (side)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(width: 230, child: panel),
-                  const SizedBox(width: 20),
-                  Expanded(child: board),
-                ],
-              )
-            else ...[
-              board,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TopBar(engine: _engine, onReset: _reset),
               const SizedBox(height: 16),
-              panel,
-            ],
-            const SizedBox(height: 14),
-            Text(
-              'Clique no quadro para adicionar pontos: o motor replaneja a '
-              'ordem de coleta e o caminho. A segurança só intervém quando o '
-              'melhor movimento levaria a um beco.',
-              style: TextStyle(
-                color: ColorsApp.muted(context),
-                fontSize: 13,
-                height: 1.5,
+              if (side)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 230, child: panel),
+                    const SizedBox(width: 20),
+                    Expanded(child: board),
+                  ],
+                )
+              else ...[
+                board,
+                const SizedBox(height: 16),
+                panel,
+              ],
+              const SizedBox(height: 14),
+              Text(
+                'Clique no quadro para adicionar pontos: o motor replaneja a '
+                'ordem de coleta e o caminho. A segurança só intervém quando o '
+                'melhor movimento levaria a um beco.',
+                style: TextStyle(
+                  color: ColorsApp.muted(context),
+                  fontSize: 13,
+                  height: 1.5,
+                ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 }

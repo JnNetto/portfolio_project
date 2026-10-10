@@ -25,9 +25,22 @@ class SiteDroplets extends StatefulWidget {
 class _SiteDropletsState extends State<SiteDroplets>
     with SingleTickerProviderStateMixin {
   late final _sim = _SiteSim(widget.count);
-  late final Ticker _ticker = createTicker(_onTick);
+  late final Ticker _ticker;
   Duration _last = Duration.zero;
   bool _visible = true;
+
+  /// Segundos sem rolagem nem ponteiro. Parada, a página não precisa de
+  /// frames: depois de um tempo quieta, o ticker dorme até o próximo gesto.
+  double _idle = 0;
+  static const _sleepAfter = 2.0;
+
+  @override
+  void initState() {
+    super.initState();
+    // No initState, e não com `late` preguiçoso: um widget descartado sem
+    // nunca ter animado criaria o ticker dentro do dispose() e quebraria.
+    _ticker = createTicker(_onTick);
+  }
 
   @override
   void didChangeDependencies() {
@@ -35,10 +48,18 @@ class _SiteDropletsState extends State<SiteDroplets>
     final size = MediaQuery.sizeOf(context);
     // Em telas de paisagem (computador) as gotas ficam só no celular 3D.
     _visible = size.height > size.width;
-    final animate = _visible && !MediaQuery.disableAnimationsOf(context);
-    if (!animate && _ticker.isActive) {
+    if (!_canAnimate && _ticker.isActive) {
       _ticker.stop();
-    } else if (animate && !_ticker.isActive) {
+    } else {
+      _wake();
+    }
+  }
+
+  bool get _canAnimate => _visible && !MediaQuery.disableAnimationsOf(context);
+
+  void _wake() {
+    _idle = 0;
+    if (_canAnimate && !_ticker.isActive) {
       _last = Duration.zero;
       _ticker.start();
     }
@@ -55,6 +76,9 @@ class _SiteDropletsState extends State<SiteDroplets>
     final dt = ((elapsed - _last).inMicroseconds / 1e6).clamp(0.0, 1 / 30);
     _last = elapsed;
     _sim.step(dt, elapsed.inMicroseconds / 1e6);
+    _idle += dt;
+    // Dorme só depois que as gotas assentaram, para não congelar no meio.
+    if (_idle > _sleepAfter && _sim.energy < 2) _ticker.stop();
   }
 
   bool _onScroll(ScrollNotification n) {
@@ -63,6 +87,7 @@ class _SiteDropletsState extends State<SiteDroplets>
       _sim
         ..scroll = n.metrics.pixels
         ..maxScroll = n.metrics.maxScrollExtent;
+      _wake();
     }
     return false;
   }
@@ -84,8 +109,14 @@ class _SiteDropletsState extends State<SiteDroplets>
           onExit: (_) => _sim.pointer = null,
           child: Listener(
             behavior: HitTestBehavior.translucent,
-            onPointerHover: (e) => _sim.pointer = e.localPosition,
-            onPointerMove: (e) => _sim.pointer = e.localPosition,
+            onPointerHover: (e) {
+              _sim.pointer = e.localPosition;
+              _wake();
+            },
+            onPointerMove: (e) {
+              _sim.pointer = e.localPosition;
+              _wake();
+            },
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -168,6 +199,10 @@ class _SiteSim extends ChangeNotifier {
   double _lastScroll = 0;
 
   _SiteSim(int count) : droplets = _seed(count);
+
+  /// Quanto as gotas ainda estão se mexendo (soma das velocidades).
+  double get energy =>
+      droplets.fold(0.0, (sum, d) => sum + d.offsetVel.distance);
 
   static List<_SiteDroplet> _seed(int count) {
     final rnd = math.Random(23);
