@@ -39,6 +39,7 @@ dependencies:
   firebase_database: ^11.0.3
   model_viewer_plus: ^1.9.3
   web: ^1.1.0
+  http: ^1.2.0
   
 
 dev_dependencies:
