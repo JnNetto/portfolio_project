@@ -103,6 +103,11 @@ class _AttributesState extends State<Attributes> {
         builder: (context, box) {
           // O reveal do logo precisa de espaço à direita do título.
           final rowsWide = box.maxWidth >= 480;
+          final titleSize = _uniformTitleSize(
+            [for (final a in attributes) '${a['title'] ?? ''}'],
+            available: box.maxWidth - (rowsWide ? 170 : 0),
+            base: rowsWide ? 40 : 30,
+          );
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -110,13 +115,17 @@ class _AttributesState extends State<Attributes> {
               const SizedBox(height: 16),
               Divider(height: 1, color: ColorsApp.border(context)),
               for (var i = 0; i < attributes.length; i++)
-                _RollingSkill(
-                  attribute: attributes[i],
-                  logo: i < _images.length ? _images[i] : null,
-                  wide: rowsWide,
-                  expanded: _expanded == i,
-                  onToggle: () => setState(
-                    () => _expanded = _expanded == i ? null : i,
+                // O hover anima só a própria linha, sem repintar a lista.
+                RepaintBoundary(
+                  child: _RollingSkill(
+                    attribute: attributes[i],
+                    logo: i < _images.length ? _images[i] : null,
+                    wide: rowsWide,
+                    titleSize: titleSize,
+                    expanded: _expanded == i,
+                    onToggle: () => setState(
+                      () => _expanded = _expanded == i ? null : i,
+                    ),
                   ),
                 ),
             ],
@@ -180,6 +189,39 @@ class _SideLabel extends StatelessWidget {
   }
 }
 
+/// Um tamanho de fonte para todos os títulos: o maior em que o título mais
+/// longo ainda cabe. Encolher cada um para caber deixava os tamanhos
+/// desencontrados de uma linha para outra.
+double _uniformTitleSize(
+  List<String> titles, {
+  required double available,
+  required double base,
+}) {
+  var widest = 0.0;
+  for (final title in titles) {
+    final painter = TextPainter(
+      text: TextSpan(text: title.toUpperCase(), style: _titleStyle(base)),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    widest = widest < painter.width ? painter.width : widest;
+  }
+  if (widest <= 0 || available <= 0) return base;
+  return (base * available / widest).clamp(18.0, base);
+}
+
+TextStyle _titleStyle(double size, {Color? color, bool italic = false}) =>
+    AppFonts.aBeeZee(
+      textStyle: TextStyle(
+        fontSize: size,
+        height: 1,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -size * 0.03,
+        color: color,
+        fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+      ),
+    );
+
 String _levelLabel(double level) {
   if (level >= 4.5) return 'Especialista';
   if (level >= 3.5) return 'Avançado';
@@ -191,6 +233,7 @@ class _RollingSkill extends StatefulWidget {
   final Map attribute;
   final Uint8List? logo;
   final bool wide;
+  final double titleSize;
   final bool expanded;
   final VoidCallback onToggle;
 
@@ -198,6 +241,7 @@ class _RollingSkill extends StatefulWidget {
     required this.attribute,
     required this.logo,
     required this.wide,
+    required this.titleSize,
     required this.expanded,
     required this.onToggle,
   });
@@ -223,8 +267,8 @@ class _RollingSkillState extends State<_RollingSkill> {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final duration = reduceMotion ? Duration.zero : _rollDuration;
     final active = _hover || _focused || widget.expanded;
-    final lineH = widget.wide ? 56.0 : 44.0;
-    final fontSize = widget.wide ? 44.0 : 32.0;
+    final fontSize = widget.titleSize;
+    final lineH = (fontSize * 1.3).roundToDouble();
 
     return Semantics(
       button: true,
@@ -344,22 +388,14 @@ class _RollingTitle extends StatelessWidget {
           height: lineHeight,
           child: Align(
             alignment: Alignment.centerLeft,
+            // Só age no limite mínimo de fonte, em telas muito estreitas.
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
               child: Text(
                 text.toUpperCase(),
                 maxLines: 1,
-                style: AppFonts.aBeeZee(
-                  textStyle: TextStyle(
-                    fontSize: fontSize,
-                    height: 1,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -fontSize * 0.03,
-                    color: color,
-                    fontStyle: italic ? FontStyle.italic : FontStyle.normal,
-                  ),
-                ),
+                style: _titleStyle(fontSize, color: color, italic: italic),
               ),
             ),
           ),
