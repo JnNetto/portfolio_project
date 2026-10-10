@@ -64,3 +64,6 @@ design-system/
 
 # Exports do Firebase (dados, não código)
 *-rtdb-export*.json
+
+# Cache de deploy do Firebase Hosting (reescrito a cada deploy)
+.firebase/
