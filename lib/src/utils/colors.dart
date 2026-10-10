@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
 class ColorsApp {
-  static const Color backgroundLight = Color(0xFFF1F5F9);
+  static const Color backgroundLight = Color(0xFFE9EEF3);
   static const Color hoverButtonLight = Color(0xFF16A34A);
   static const Color hoverIconLight = Color(0xFFDCFCE7);
-  static const Color backgroundDetailsLight = Color(0xFFFFFFFF);
-  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color backgroundDetailsLight = Color(0xFFF4F7FA);
+  static const Color cardLight = Color(0xFFF4F7FA);
   static const Color letterButtonLight = Color(0xFF15803D);
   static const Color shadowColorLight = Color(0x331E293B);
   static const Color borderLight = Color(0xFFCBD5E1);
   static const Color appbarLight = Color(0xFF0F172A);
   static const Color lettersLight = Color(0xFF0F172A);
   static const Color starsLight = Color(0xFFFBBF24);
-  static const Color mutedLight = Color(0xFF64748B);
+  static const Color mutedLight = Color(0xFF526073);
   static const Color accentLight = Color(0xFF16A34A);
-  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color surfaceLight = Color(0xFFF4F7FA);
 
   static const Color backgroundDark = Color(0xFF0F172A);
   static const Color hoverButtonDark = Color(0xFF4ADE80);
